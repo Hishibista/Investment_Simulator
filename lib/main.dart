@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:final_project/theme.dart';
+import 'package:final_project/screens/home_screen.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -11,13 +13,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Investment Simulator',
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Investment Simulator')),
-        body: const Center(
-          child: Text('App is running'),
-        ),
-      ),
+      theme: AppTheme.lightTheme,
+      home: const HomeScreen(),
     );
   }
 }
