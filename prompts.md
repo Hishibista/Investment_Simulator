@@ -31,3 +31,5 @@ Mark complete after finished
 
 [x] 3. Place each question on a separate screen. Add a progress indicator at the top showing the user’s progress (e.g., Step 1 of 5). Include Next and Back buttons to allow navigation between questions.
 
+[x] 4. After Selecting Get Started instead of going directly to the questionnaire the user should first navigate to create a account using valid email and password - email should be valid and password should me atleast 6 characters long with, atleast one number, one special character and one Capital letter. 
+ 

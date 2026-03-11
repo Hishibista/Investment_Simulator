@@ -1,15 +1,23 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/questionnaire.dart';
 
+//Class controls and updates the questionnaire data
+// Extends to stateNotifier so riverpod can track changes in state
 class QuestionnaireNotifier extends StateNotifier<Questionnaire> {
-  QuestionnaireNotifier() : super(Questionnaire());
+  QuestionnaireNotifier() : super(Questionnaire()); 
+  //super(Questionnaire()) start the state with empty questionnaire
 
+//calls investment objective and gets value of either growth or preserve
   void setInvestmentObjective(String value) {
+    //Updates the questionnaire data stored in riverpod
+    //copywith - instead of editing object directly,
+    //it creates a new copy and updates only the field specified
     state = state.copyWith(investmentObjective: value);
     nextStep();
   }
-
+  //moves to financial goal 
   void setFinancialGoal(String value) {
+    //creates new copy with selected option
     state = state.copyWith(financialGoal: value);
     nextStep();
   }
@@ -39,12 +47,13 @@ class QuestionnaireNotifier extends StateNotifier<Questionnaire> {
       state = state.copyWith(currentStep: state.currentStep - 1);
     }
   }
-
+  // Clears all answers and restarts questionnaire
   void reset() {
     state = Questionnaire();
   }
 
   bool isComplete() {
+    // Return true only if all fields have values
     return state.investmentObjective != null &&
         state.financialGoal != null &&
         state.riskTolerance != null &&
@@ -53,6 +62,7 @@ class QuestionnaireNotifier extends StateNotifier<Questionnaire> {
   }
   
   bool canMoveToNextStep() {
+    //check current step and verify required input exists
     switch (state.currentStep) {
       case 0: return state.investmentObjective != null;
       case 1: return state.financialGoal != null;
@@ -63,7 +73,9 @@ class QuestionnaireNotifier extends StateNotifier<Questionnaire> {
     }
   }
 }
-
+//This exposes questionnaireNotifier so UI can access it
+//stateNotifierProvider allows UI widgets to 
+//update questionnaire using the notifier
 final questionnaireProvider = StateNotifierProvider<QuestionnaireNotifier, Questionnaire>((ref) {
   return QuestionnaireNotifier();
 });

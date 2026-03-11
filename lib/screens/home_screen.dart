@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:final_project/screens/questionnaire_screen.dart';
+import 'package:final_project/screens/registration_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -56,7 +56,7 @@ class HomeScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const QuestionnaireScreen(),
+                        builder: (context) => const RegistrationScreen(),
                       ),
                     );
                   },

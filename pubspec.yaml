@@ -38,6 +38,11 @@ dependencies:
   cupertino_icons: ^1.0.8
   google_fonts: ^8.0.2
 
+  firebase_core: ^2.31.0
+  firebase_auth: ^4.19.0
+  cloud_firestore: ^4.17.0
+  shared_preferences: ^2.2.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -90,8 +95,3 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
-
-firebase_core: ^2.31.0
-firebase_auth: ^4.19.0
-cloud_firestore: ^4.17.0
-shared_preferences: ^2.2.3
