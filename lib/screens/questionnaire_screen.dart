@@ -7,8 +7,13 @@ class QuestionnaireScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    //watch the questionnaire state, updates UI when state changes
     final questionnaire = ref.watch(questionnaireProvider);
+
+    //access questionnaire to update the questionnaire state
     final notifier = ref.read(questionnaireProvider.notifier);
+
+    //access the theme for consistent styling
     final theme = Theme.of(context);
 
     final List<Widget> steps = [
@@ -57,9 +62,12 @@ class QuestionnaireScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Questionnaire"),
+
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
+
+            //if user is not on first step, go to previous
             if (questionnaire.currentStep > 0) {
               notifier.previousStep();
             } else {
@@ -72,14 +80,17 @@ class QuestionnaireScreen extends ConsumerWidget {
         child: Column(
           children: [
             // Progress Indicator
+            //shows which step we are currently on
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  //shows step number and completion
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      //current step text
                       Text(
                         "Step ${questionnaire.currentStep + 1} of 5",
                         style: theme.textTheme.bodyMedium?.copyWith(
@@ -87,6 +98,7 @@ class QuestionnaireScreen extends ConsumerWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+                      //percentage completion
                       Text(
                         "${((questionnaire.currentStep + 1) / 5 * 100).toInt()}%",
                         style: theme.textTheme.bodyMedium?.copyWith(
@@ -119,6 +131,7 @@ class QuestionnaireScreen extends ConsumerWidget {
               padding: const EdgeInsets.all(24.0),
               child: Row(
                 children: [
+                  //back button only appears after step 1
                   if (questionnaire.currentStep > 0)
                     Expanded(
                       child: OutlinedButton(
@@ -126,13 +139,18 @@ class QuestionnaireScreen extends ConsumerWidget {
                         child: const Text("Back"),
                       ),
                     ),
-                  if (questionnaire.currentStep > 0) const SizedBox(width: 16),
+                  if (questionnaire.currentStep > 0) 
+                  const SizedBox(width: 16),
                   Expanded(
                     child: ElevatedButton(
+                      //only allow next step if question is answered
                       onPressed: notifier.canMoveToNextStep()
                           ? () {
+                            //if not on final step - go forward
                               if (questionnaire.currentStep < 4) {
                                 notifier.nextStep();
+
+                                //if final step - show completion message
                               } else {
                                 // Final step - navigation to results will be handled later
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -155,39 +173,48 @@ class QuestionnaireScreen extends ConsumerWidget {
 
   Widget _buildSection(
     BuildContext context,
-    String title,
-    List<String> options,
-    String? selectedValue,
-    Function(String) onSelected,
+    String title, 
+    List<String> options, //answer choices 
+    String? selectedValue, //currently selected answer 
+    Function(String) onSelected, //function to call when selected
   ) {
     final theme = Theme.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+
+        //question title 
         Text(
           title,
           style: theme.textTheme.headlineMedium?.copyWith(fontSize: 22),
         ),
         const SizedBox(height: 24),
+
+        //list of selectable options
         Expanded(
           child: ListView.separated(
             itemCount: options.length,
             separatorBuilder: (context, index) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
               final option = options[index];
+
+              //check if this option is selected 
               final isSelected = selectedValue == option;
               return Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
+                  //highlight border if selected 
                   border: Border.all(
                     color: isSelected ? theme.colorScheme.secondary : Colors.white.withAlpha(25),
                     width: 2,
                   ),
+                  // highlight background if selected 
                   color: isSelected 
                       ? theme.colorScheme.secondary.withAlpha(25) 
                       : theme.colorScheme.surface,
                 ),
+                // radio list tile creates selectable options
                 child: RadioListTile<String>(
                   title: Text(
                     option,

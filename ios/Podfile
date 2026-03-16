@@ -1,5 +1,5 @@
 # Uncomment this line to define a global platform for your project
-# platform :ios, '13.0'
+platform :ios, '13.0'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
@@ -39,5 +39,36 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+    target.build_configurations.each do |config|
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
+      config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'gnu++17'
+      config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+      config.build_settings['DEFINES_MODULE'] = 'YES'
+    end
+    # Fix for -G unsupported option issue
+    target.build_phases.each do |build_phase|
+      if build_phase.isa == 'PBXSourcesBuildPhase'
+        build_phase.files.each do |file|
+          if file.settings && file.settings['COMPILER_FLAGS']
+            flags = file.settings['COMPILER_FLAGS']
+            if flags.include?('-GCC_WARN_INHIBIT_ALL_WARNINGS')
+              file.settings['COMPILER_FLAGS'] = flags.gsub('-GCC_WARN_INHIBIT_ALL_WARNINGS', '')
+            end
+          end
+        end
+      end
+    end
+  end
+
+  # Fix for gRPC template issues with newer Xcode
+  ['gRPC-Core', 'gRPC-C++'].each do |pod_name|
+    basic_seq_path = "Pods/#{pod_name}/src/core/lib/promise/detail/basic_seq.h"
+    if File.exist?(basic_seq_path)
+      system("chmod +w #{basic_seq_path}")
+      text = File.read(basic_seq_path)
+      new_text = text.gsub('Traits::template CallSeqFactory', 'Traits::CallSeqFactory')
+      File.open(basic_seq_path, "w") {|file| file.puts new_text }
+      system("chmod -w #{basic_seq_path}")
+    end
   end
 end

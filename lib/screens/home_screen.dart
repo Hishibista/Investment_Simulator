@@ -18,6 +18,7 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
+      //SafeArea ensures content does not overlap with system UI
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
@@ -48,13 +49,18 @@ class HomeScreen extends StatelessWidget {
                 "Personalized investment strategies based on your risk profile and financial goals.",
                 style: theme.textTheme.bodyLarge,
               ),
+              //Spacer pushes buttons to the bottom of the screen
               const Spacer(),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
+
+                  //when pressed, navigate the registration screen
                   onPressed: () {
                     Navigator.push(
                       context,
+
+                      //material page route handles screen transition
                       MaterialPageRoute(
                         builder: (context) => const RegistrationScreen(),
                       ),
@@ -67,6 +73,7 @@ class HomeScreen extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(
+                  //currently empty - could later show example portfolios
                   onPressed: () {},
                   child: const Text("View Samples"),
                 ),
