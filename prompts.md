@@ -45,3 +45,6 @@ Expected Return (example)
 ~9–12% annual return (long-term estimate)
 Risk Level: High volatility,Large short-term swings possible. 
 Include a pie chart showing the portfolio allocation percentages. Clearly label each asset category in the chart or legend. The UI should be clean, professional, and easy to understand.
+
+[x] 6. Make a option screen for 4 sample portfolios with option for high risk/high return, medium risk/ medium return, low risk/ low return. 
+

@@ -2,19 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../models/portfolio_sample.dart';
 
-class SamplesScreen extends StatelessWidget {
-  const SamplesScreen({super.key});
+class SampleDetailsScreen extends StatelessWidget {
+  final int initialPage;
+  const SampleDetailsScreen({super.key, this.initialPage = 0});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final PageController controller = PageController(initialPage: initialPage);
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Sample Portfolios"),
+        title: const Text("Sample Portfolio"),
         elevation: 0,
       ),
       body: PageView.builder(
+        controller: controller,
         itemCount: portfolioSamples.length,
         itemBuilder: (context, index) {
           final sample = portfolioSamples[index];
@@ -62,6 +65,13 @@ class SamplesScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 40),
+                  // Portfolio details
+                  _DetailItem(label: "Best for", value: sample.bestFor),
+                  const SizedBox(height: 12),
+                  _DetailItem(label: "Expected Return", value: sample.expectedReturn),
+                  const SizedBox(height: 12),
+                  _DetailItem(label: "Risk Level", value: sample.riskLevel),
+                  const SizedBox(height: 32),
                   // Simplified Legend
                   Container(
                     padding: const EdgeInsets.all(16),
@@ -85,6 +95,39 @@ class SamplesScreen extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+}
+
+class _DetailItem extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _DetailItem({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label.toUpperCase(),
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey,
+            letterSpacing: 1.2,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 16,
+            color: Colors.white,
+          ),
+        ),
+      ],
     );
   }
 }

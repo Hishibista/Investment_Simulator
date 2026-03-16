@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:final_project/screens/registration_screen.dart';
-import 'package:final_project/screens/samples_screen.dart';
+import 'package:final_project/screens/sample_options_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -79,7 +79,7 @@ class HomeScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const SamplesScreen(),
+                        builder: (context) => const SampleOptionsScreen(),
                       ),
                     );
                   },
