@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:final_project/screens/registration_screen.dart';
-import 'package:final_project/screens/sample_options_screen.dart';
+import 'package:final_project/screens/sample_portfolio_button/sample_options_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});

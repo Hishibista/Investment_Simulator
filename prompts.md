@@ -48,3 +48,10 @@ Include a pie chart showing the portfolio allocation percentages. Clearly label 
 
 [x] 6. Make a option screen for 4 sample portfolios with option for high risk/high return, medium risk/ medium return, low risk/ low return. 
 
+[x] 7. For high risk/ high return option in view samples make a portfolio with following allocations: 
+80% Stocks (growth / tech / global equities)
+10% Emerging Markets
+5% Corporate Bonds
+5% Cash
+Include a pie chart showing the portfolio allocation percentages. Clearly label each asset category in the chart or legend. The UI should be clean, professional, and easy to understand.
+

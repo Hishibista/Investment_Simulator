@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import '../models/portfolio_sample.dart';
+import '../../models/portfolio_sample.dart';
 
 class SampleDetailsScreen extends StatelessWidget {
   final int initialPage;
@@ -8,7 +8,9 @@ class SampleDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // theme for consistent styling 
     final theme = Theme.of(context);
+    // page controller allows horizontal swiping between sa,ple portfolios
     final PageController controller = PageController(initialPage: initialPage);
     
     return Scaffold(
@@ -20,8 +22,10 @@ class SampleDetailsScreen extends StatelessWidget {
         controller: controller,
         itemCount: portfolioSamples.length,
         itemBuilder: (context, index) {
+          //get portfolio sample for current page.
           final sample = portfolioSamples[index];
           return SingleChildScrollView(
+            // adds a bouncing scroll effect 
             physics: const BouncingScrollPhysics(),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
@@ -37,7 +41,8 @@ class SampleDetailsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    sample.riskLevel.split(',').first, // Just the high-level risk
+                    // Just the high-level risk
+                    sample.riskLevel.split(',').first, 
                     style: const TextStyle(color: Colors.grey, fontSize: 16),
                   ),
                   const SizedBox(height: 40),
@@ -47,11 +52,16 @@ class SampleDetailsScreen extends StatelessWidget {
                     child: PieChart(
                       PieChartData(
                         sectionsSpace: 2,
+                        //empty space in center of chart 
                         centerSpaceRadius: MediaQuery.of(context).size.width * 0.15,
+
+                        //convert asset allocations into pie slices
                         sections: sample.assets.map((asset) {
                           return PieChartSectionData(
                             color: asset.color,
                             value: asset.percentage,
+
+                            //label shown on slice
                             title: '${asset.percentage.toInt()}%',
                             radius: MediaQuery.of(context).size.width * 0.2,
                             titleStyle: const TextStyle(
@@ -64,15 +74,6 @@ class SampleDetailsScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 40),
-                  // Portfolio details
-                  _DetailItem(label: "Best for", value: sample.bestFor),
-                  const SizedBox(height: 12),
-                  _DetailItem(label: "Expected Return", value: sample.expectedReturn),
-                  const SizedBox(height: 12),
-                  _DetailItem(label: "Risk Level", value: sample.riskLevel),
-                  const SizedBox(height: 32),
-                  // Simplified Legend
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -84,11 +85,6 @@ class SampleDetailsScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 32),
-                  if (index < portfolioSamples.length - 1)
-                    const Text(
-                      "Swipe for more options →",
-                      style: TextStyle(color: Colors.grey, fontSize: 12),
-                    ),
                 ],
               ),
             ),

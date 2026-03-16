@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../models/portfolio_sample.dart';
-import 'sample_details_screen.dart';
+import '../../models/portfolio_sample.dart';
+import 'high_risk_portfolio.dart';
 
 class SampleOptionsScreen extends StatelessWidget {
   const SampleOptionsScreen({super.key});
