@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:final_project/screens/registration_screen.dart';
+import 'package:final_project/screens/samples_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -73,8 +74,15 @@ class HomeScreen extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(
-                  //currently empty - could later show example portfolios
-                  onPressed: () {},
+                  //Navigates to the samples screen
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SamplesScreen(),
+                      ),
+                    );
+                  },
                   child: const Text("View Samples"),
                 ),
               ),

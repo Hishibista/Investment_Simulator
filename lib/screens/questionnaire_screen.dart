@@ -214,24 +214,33 @@ class QuestionnaireScreen extends ConsumerWidget {
                       ? theme.colorScheme.secondary.withAlpha(25) 
                       : theme.colorScheme.surface,
                 ),
-                // radio list tile creates selectable options
-                child: RadioListTile<String>(
-                  title: Text(
-                    option,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: isSelected ? Colors.white : theme.colorScheme.onSurface,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                // manual radio tile implementation to avoid deprecation warnings
+                child: InkWell(
+                  onTap: () => onSelected(option),
+                  borderRadius: BorderRadius.circular(16),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            option,
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              color: isSelected ? Colors.white : theme.colorScheme.onSurface,
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            ),
+                          ),
+                        ),
+                        Radio<String>(
+                          value: option,
+                          groupValue: selectedValue,
+                          onChanged: (value) {
+                            if (value != null) onSelected(value);
+                          },
+                          activeColor: theme.colorScheme.secondary,
+                        ),
+                      ],
                     ),
-                  ),
-                  value: option,
-                  groupValue: selectedValue,
-                  onChanged: (value) {
-                    if (value != null) onSelected(value);
-                  },
-                  activeColor: theme.colorScheme.secondary,
-                  controlAffinity: ListTileControlAffinity.trailing,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
                   ),
                 ),
               );

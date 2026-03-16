@@ -33,3 +33,15 @@ Mark complete after finished
 
 [x] 4. After Selecting Get Started instead of going directly to the questionnaire the user should first navigate to create a account using valid email and password - email should be valid and password should me atleast 6 characters long with, atleast one number, one special character and one Capital letter. 
  
+[x] 5. For the view samples button, make 4 samples for high risk/high return, medium risk/ medium return, low risk/ low return. 
+Start with high risk/high return
+Best for: Long time horizons (10–20+ years)
+Allocation Example:
+80% Stocks (growth / tech / global equities)
+10% Emerging Markets
+5% Corporate Bonds
+5% Cash
+Expected Return (example)
+~9–12% annual return (long-term estimate)
+Risk Level: High volatility,Large short-term swings possible. 
+Include a pie chart showing the portfolio allocation percentages. Clearly label each asset category in the chart or legend. The UI should be clean, professional, and easy to understand.
