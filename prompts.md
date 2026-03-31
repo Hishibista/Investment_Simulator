@@ -56,3 +56,5 @@ Include a pie chart showing the portfolio allocation percentages. Clearly label 
 Include a pie chart showing the portfolio allocation percentages. Clearly label each asset category in the chart or legend. The UI should be clean, professional, and easy to understand.
 
 [x] 8. Implement account creation using Firebase Authentication. After a user successfully registers, store their associated data in Firebase, including their profile and any app-related information, so their data persists across sessions and devices.
+
+[x] 9. After account creation and completion of the questionnaire, prompt the user to input their initial investment amount. Using their responses, generate a personalized portfolio allocation and demonstrate how their funds would be distributed across various asset classes.

@@ -1,15 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/questionnaire_provider.dart';
+import 'portfolio_allocation_screen.dart';
 
-class QuestionnaireScreen extends ConsumerWidget {
+class QuestionnaireScreen extends ConsumerStatefulWidget {
   const QuestionnaireScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<QuestionnaireScreen> createState() => _QuestionnaireScreenState();
+}
+
+class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen> {
+  final TextEditingController _amountController = TextEditingController();
+
+  @override
+  void dispose() {
+    _amountController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final questionnaire = ref.watch(questionnaireProvider);
     final notifier = ref.read(questionnaireProvider.notifier);
     final theme = Theme.of(context);
+
+    // Update controller if step is 5 and it's empty but state has value
+    if (questionnaire.currentStep == 5 && _amountController.text.isEmpty && questionnaire.initialInvestmentAmount != null) {
+      _amountController.text = questionnaire.initialInvestmentAmount.toString();
+    }
 
     final List<Widget> steps = [
       _buildSection(
@@ -52,6 +71,11 @@ class QuestionnaireScreen extends ConsumerWidget {
         questionnaire.financialProfile,
         (val) => notifier.setFinancialProfile(val),
       ),
+      _buildAmountStep(
+        context,
+        "6. Initial Investment",
+        "Enter the amount you plan to invest initially.",
+      ),
     ];
 
     return Scaffold(
@@ -80,14 +104,14 @@ class QuestionnaireScreen extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "Step ${questionnaire.currentStep + 1} of 5",
+                        "Step ${questionnaire.currentStep + 1} of 6",
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
-                        "${((questionnaire.currentStep + 1) / 5 * 100).toInt()}%",
+                        "${((questionnaire.currentStep + 1) / 6 * 100).toInt()}%",
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.secondary,
                           fontWeight: FontWeight.bold,
@@ -99,7 +123,7 @@ class QuestionnaireScreen extends ConsumerWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(4),
                     child: LinearProgressIndicator(
-                      value: (questionnaire.currentStep + 1) / 5,
+                      value: (questionnaire.currentStep + 1) / 6,
                       backgroundColor: theme.colorScheme.surface,
                       valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.secondary),
                     ),
@@ -129,7 +153,7 @@ class QuestionnaireScreen extends ConsumerWidget {
                     child: ElevatedButton(
                       onPressed: notifier.canMoveToNextStep()
                           ? () async {
-                              if (questionnaire.currentStep < 4) {
+                              if (questionnaire.currentStep < 5) {
                                 notifier.nextStep();
                               } else {
                                 try {
@@ -143,8 +167,11 @@ class QuestionnaireScreen extends ConsumerWidget {
 
                                   if (context.mounted) {
                                     Navigator.pop(context); // Close loading
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text("Questionnaire Complete and Saved!")),
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const PortfolioAllocationScreen(),
+                                      ),
                                     );
                                   }
                                 } catch (e) {
@@ -158,7 +185,7 @@ class QuestionnaireScreen extends ConsumerWidget {
                               }
                             }
                           : null,
-                      child: Text(questionnaire.currentStep == 4 ? "See Results" : "Next"),
+                      child: Text(questionnaire.currentStep == 5 ? "See Results" : "Next"),
                     ),
                   ),
                 ],
@@ -236,6 +263,54 @@ class QuestionnaireScreen extends ConsumerWidget {
               );
             },
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAmountStep(BuildContext context, String title, String subtitle) {
+    final theme = Theme.of(context);
+    final notifier = ref.read(questionnaireProvider.notifier);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: theme.textTheme.headlineMedium?.copyWith(fontSize: 22),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          subtitle,
+          style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey),
+        ),
+        const SizedBox(height: 32),
+        TextField(
+          controller: _amountController,
+          keyboardType: TextInputType.number,
+          style: const TextStyle(color: Colors.white, fontSize: 24),
+          decoration: InputDecoration(
+            prefixText: "\$ ",
+            prefixStyle: const TextStyle(color: Colors.white, fontSize: 24),
+            hintText: "0.00",
+            hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(color: theme.colorScheme.secondary),
+            ),
+            filled: true,
+            fillColor: theme.colorScheme.surface,
+          ),
+          onChanged: (value) {
+            final double? amount = double.tryParse(value);
+            if (amount != null) {
+              notifier.setInitialInvestmentAmount(amount);
+            }
+          },
         ),
       ],
     );

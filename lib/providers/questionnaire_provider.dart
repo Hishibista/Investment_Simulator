@@ -34,6 +34,10 @@ class QuestionnaireNotifier extends StateNotifier<Questionnaire> {
     state = state.copyWith(financialProfile: value);
   }
 
+  void setInitialInvestmentAmount(double value) {
+    state = state.copyWith(initialInvestmentAmount: value);
+  }
+
   Future<void> saveToFirestore() async {
     final user = _ref.read(authStateProvider).value;
     if (user != null) {
@@ -44,12 +48,13 @@ class QuestionnaireNotifier extends StateNotifier<Questionnaire> {
         'riskTolerance': state.riskTolerance,
         'timeHorizon': state.timeHorizon,
         'financialProfile': state.financialProfile,
+        'initialInvestmentAmount': state.initialInvestmentAmount,
       });
     }
   }
   
   void nextStep() {
-    if (state.currentStep < 4) {
+    if (state.currentStep < 5) {
       state = state.copyWith(currentStep: state.currentStep + 1);
     }
   }
@@ -70,7 +75,8 @@ class QuestionnaireNotifier extends StateNotifier<Questionnaire> {
         state.financialGoal != null &&
         state.riskTolerance != null &&
         state.timeHorizon != null &&
-        state.financialProfile != null;
+        state.financialProfile != null &&
+        state.initialInvestmentAmount != null;
   }
   
   bool canMoveToNextStep() {
@@ -81,6 +87,7 @@ class QuestionnaireNotifier extends StateNotifier<Questionnaire> {
       case 2: return state.riskTolerance != null;
       case 3: return state.timeHorizon != null;
       case 4: return state.financialProfile != null;
+      case 5: return state.initialInvestmentAmount != null && state.initialInvestmentAmount! > 0;
       default: return false;
     }
   }
