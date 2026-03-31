@@ -10,7 +10,7 @@ class AppTheme {
   static const Color greyColor = Color(0xFFBDBDBD);
   static const Color lightGreyColor = Color(0xFF2C2C2C);
 
-  static final ThemeData lightTheme = ThemeData(
+  static final ThemeData darkTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
     primaryColor: primaryColor,

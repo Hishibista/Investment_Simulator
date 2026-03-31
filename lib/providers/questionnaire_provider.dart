@@ -1,10 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/questionnaire.dart';
+import 'auth_provider.dart';
 
 //Class controls and updates the questionnaire data
 // Extends to stateNotifier so riverpod can track changes in state
 class QuestionnaireNotifier extends StateNotifier<Questionnaire> {
-  QuestionnaireNotifier() : super(Questionnaire()); 
+  final Ref _ref;
+  QuestionnaireNotifier(this._ref) : super(Questionnaire()); 
   //super(Questionnaire()) start the state with empty questionnaire
 
 //calls investment objective and gets value of either growth or preserve
@@ -13,27 +15,37 @@ class QuestionnaireNotifier extends StateNotifier<Questionnaire> {
     //copywith - instead of editing object directly,
     //it creates a new copy and updates only the field specified
     state = state.copyWith(investmentObjective: value);
-    nextStep();
   }
   //moves to financial goal 
   void setFinancialGoal(String value) {
     //creates new copy with selected option
     state = state.copyWith(financialGoal: value);
-    nextStep();
   }
 
   void setRiskTolerance(String value) {
     state = state.copyWith(riskTolerance: value);
-    nextStep();
   }
 
   void setTimeHorizon(String value) {
     state = state.copyWith(timeHorizon: value);
-    nextStep();
   }
 
   void setFinancialProfile(String value) {
     state = state.copyWith(financialProfile: value);
+  }
+
+  Future<void> saveToFirestore() async {
+    final user = _ref.read(authStateProvider).value;
+    if (user != null) {
+      final authService = _ref.read(authServiceProvider);
+      await authService.updateQuestionnaireData(user.uid, {
+        'investmentObjective': state.investmentObjective,
+        'financialGoal': state.financialGoal,
+        'riskTolerance': state.riskTolerance,
+        'timeHorizon': state.timeHorizon,
+        'financialProfile': state.financialProfile,
+      });
+    }
   }
   
   void nextStep() {
@@ -77,5 +89,5 @@ class QuestionnaireNotifier extends StateNotifier<Questionnaire> {
 //stateNotifierProvider allows UI widgets to 
 //update questionnaire using the notifier
 final questionnaireProvider = StateNotifierProvider<QuestionnaireNotifier, Questionnaire>((ref) {
-  return QuestionnaireNotifier();
+  return QuestionnaireNotifier(ref);
 });

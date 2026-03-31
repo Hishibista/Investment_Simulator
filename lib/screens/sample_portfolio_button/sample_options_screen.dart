@@ -7,8 +7,6 @@ class SampleOptionsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    
     return Scaffold(
       appBar: AppBar(
         title: const Text("Choose a Portfolio"),

@@ -51,6 +51,10 @@ post_install do |installer|
         build_phase.files.each do |file|
           if file.settings && file.settings['COMPILER_FLAGS']
             flags = file.settings['COMPILER_FLAGS']
+            # Remove -G if it exists as an independent flag or part of a flag
+            if flags.include?('-G')
+              file.settings['COMPILER_FLAGS'] = flags.gsub(/\s?-G\s?/, ' ').strip
+            end
             if flags.include?('-GCC_WARN_INHIBIT_ALL_WARNINGS')
               file.settings['COMPILER_FLAGS'] = flags.gsub('-GCC_WARN_INHIBIT_ALL_WARNINGS', '')
             end

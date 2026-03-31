@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:final_project/screens/questionnaire_screen.dart';
+import 'package:final_project/providers/auth_provider.dart';
 
-class RegistrationScreen extends StatefulWidget {
+class RegistrationScreen extends ConsumerStatefulWidget {
   const RegistrationScreen({super.key});
 
   @override
-  State<RegistrationScreen> createState() => _RegistrationScreenState();
+  ConsumerState<RegistrationScreen> createState() => _RegistrationScreenState();
 }
 
-class _RegistrationScreenState extends State<RegistrationScreen> {
+class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -51,10 +54,35 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     return null;
   }
 
-  void _submitForm() {
+  Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      // Show disclaimer as required by requirement 2
-      _showDisclaimer();
+      setState(() {
+        _isLoading = true;
+      });
+
+      try {
+        final authService = ref.read(authServiceProvider);
+        await authService.signUpWithEmailAndPassword(
+          _emailController.text.trim(),
+          _passwordController.text,
+        );
+        
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+          _showDisclaimer();
+        }
+      } catch (e) {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(e.toString())),
+          );
+        }
+      }
     }
   }
 
@@ -123,6 +151,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   ),
                   keyboardType: TextInputType.emailAddress,
                   validator: _validateEmail,
+                  enabled: !_isLoading,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -143,6 +172,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   ),
                   obscureText: _obscurePassword,
                   validator: _validatePassword,
+                  enabled: !_isLoading,
                 ),
                 const SizedBox(height: 12),
                 Text(
@@ -153,8 +183,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: _submitForm,
-                    child: const Text("Create Account"),
+                    onPressed: _isLoading ? null : _submitForm,
+                    child: _isLoading 
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Text("Create Account"),
                   ),
                 ),
               ],

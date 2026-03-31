@@ -95,39 +95,6 @@ class SampleDetailsScreen extends StatelessWidget {
   }
 }
 
-class _DetailItem extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _DetailItem({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label.toUpperCase(),
-          style: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey,
-            letterSpacing: 1.2,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 16,
-            color: Colors.white,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 class _LegendItem extends StatelessWidget {
   final PortfolioAsset asset;
 

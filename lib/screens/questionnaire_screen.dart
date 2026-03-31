@@ -7,13 +7,8 @@ class QuestionnaireScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    //watch the questionnaire state, updates UI when state changes
     final questionnaire = ref.watch(questionnaireProvider);
-
-    //access questionnaire to update the questionnaire state
     final notifier = ref.read(questionnaireProvider.notifier);
-
-    //access the theme for consistent styling
     final theme = Theme.of(context);
 
     final List<Widget> steps = [
@@ -22,14 +17,14 @@ class QuestionnaireScreen extends ConsumerWidget {
         "1. Investment Objective",
         ["Grow wealth", "Preserve wealth"],
         questionnaire.investmentObjective,
-        notifier.setInvestmentObjective,
+        (val) => notifier.setInvestmentObjective(val),
       ),
       _buildSection(
         context,
         "2. Financial Goals",
         ["Buy a house", "Pay for education", "Retirement", "Other"],
         questionnaire.financialGoal,
-        notifier.setFinancialGoal,
+        (val) => notifier.setFinancialGoal(val),
       ),
       _buildSection(
         context,
@@ -41,33 +36,30 @@ class QuestionnaireScreen extends ConsumerWidget {
           "No preference"
         ],
         questionnaire.riskTolerance,
-        notifier.setRiskTolerance,
+        (val) => notifier.setRiskTolerance(val),
       ),
       _buildSection(
         context,
         "4. Time Horizon",
         ["Less than 3 years", "3–7 years", "7–15 years", "15+ years"],
         questionnaire.timeHorizon,
-        notifier.setTimeHorizon,
+        (val) => notifier.setTimeHorizon(val),
       ),
       _buildSection(
         context,
         "5. Financial Profile",
         ["Student", "Early career", "Mid-career", "Near retirement"],
         questionnaire.financialProfile,
-        notifier.setFinancialProfile,
+        (val) => notifier.setFinancialProfile(val),
       ),
     ];
 
     return Scaffold(
       appBar: AppBar(
         title: const Text("Questionnaire"),
-
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-
-            //if user is not on first step, go to previous
             if (questionnaire.currentStep > 0) {
               notifier.previousStep();
             } else {
@@ -79,18 +71,14 @@ class QuestionnaireScreen extends ConsumerWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // Progress Indicator
-            //shows which step we are currently on
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  //shows step number and completion
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      //current step text
                       Text(
                         "Step ${questionnaire.currentStep + 1} of 5",
                         style: theme.textTheme.bodyMedium?.copyWith(
@@ -98,7 +86,6 @@ class QuestionnaireScreen extends ConsumerWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      //percentage completion
                       Text(
                         "${((questionnaire.currentStep + 1) / 5 * 100).toInt()}%",
                         style: theme.textTheme.bodyMedium?.copyWith(
@@ -109,53 +96,65 @@ class QuestionnaireScreen extends ConsumerWidget {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  LinearProgressIndicator(
-                    value: (questionnaire.currentStep + 1) / 5,
-                    backgroundColor: theme.colorScheme.surface,
-                    valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.secondary),
+                  ClipRRect(
                     borderRadius: BorderRadius.circular(4),
+                    child: LinearProgressIndicator(
+                      value: (questionnaire.currentStep + 1) / 5,
+                      backgroundColor: theme.colorScheme.surface,
+                      valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.secondary),
+                    ),
                   ),
                 ],
               ),
             ),
-            
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: steps[questionnaire.currentStep],
               ),
             ),
-
-            // Navigation Buttons
             Padding(
               padding: const EdgeInsets.all(24.0),
               child: Row(
                 children: [
-                  //back button only appears after step 1
                   if (questionnaire.currentStep > 0)
                     Expanded(
                       child: OutlinedButton(
-                        onPressed: notifier.previousStep,
+                        onPressed: () => notifier.previousStep(),
                         child: const Text("Back"),
                       ),
                     ),
-                  if (questionnaire.currentStep > 0) 
-                  const SizedBox(width: 16),
+                  if (questionnaire.currentStep > 0) const SizedBox(width: 16),
                   Expanded(
                     child: ElevatedButton(
-                      //only allow next step if question is answered
                       onPressed: notifier.canMoveToNextStep()
-                          ? () {
-                            //if not on final step - go forward
+                          ? () async {
                               if (questionnaire.currentStep < 4) {
                                 notifier.nextStep();
-
-                                //if final step - show completion message
                               } else {
-                                // Final step - navigation to results will be handled later
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text("Questionnaire Complete!")),
-                                );
+                                try {
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (context) => const Center(child: CircularProgressIndicator()),
+                                  );
+
+                                  await notifier.saveToFirestore();
+
+                                  if (context.mounted) {
+                                    Navigator.pop(context); // Close loading
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text("Questionnaire Complete and Saved!")),
+                                    );
+                                  }
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    Navigator.pop(context); // Close loading
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text("Error saving data: $e")),
+                                    );
+                                  }
+                                }
                               }
                             }
                           : null,
@@ -173,48 +172,39 @@ class QuestionnaireScreen extends ConsumerWidget {
 
   Widget _buildSection(
     BuildContext context,
-    String title, 
-    List<String> options, //answer choices 
-    String? selectedValue, //currently selected answer 
-    Function(String) onSelected, //function to call when selected
+    String title,
+    List<String> options,
+    String? selectedValue,
+    void Function(String) onSelected,
   ) {
     final theme = Theme.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-
-        //question title 
         Text(
           title,
           style: theme.textTheme.headlineMedium?.copyWith(fontSize: 22),
         ),
         const SizedBox(height: 24),
-
-        //list of selectable options
         Expanded(
           child: ListView.separated(
             itemCount: options.length,
             separatorBuilder: (context, index) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
               final option = options[index];
-
-              //check if this option is selected 
               final isSelected = selectedValue == option;
               return Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
-                  //highlight border if selected 
                   border: Border.all(
-                    color: isSelected ? theme.colorScheme.secondary : Colors.white.withAlpha(25),
+                    color: isSelected ? theme.colorScheme.secondary : Colors.white.withValues(alpha: 0.1),
                     width: 2,
                   ),
-                  // highlight background if selected 
                   color: isSelected 
-                      ? theme.colorScheme.secondary.withAlpha(25) 
+                      ? theme.colorScheme.secondary.withValues(alpha: 0.1) 
                       : theme.colorScheme.surface,
                 ),
-                // manual radio tile implementation to avoid deprecation warnings
                 child: InkWell(
                   onTap: () => onSelected(option),
                   borderRadius: BorderRadius.circular(16),
