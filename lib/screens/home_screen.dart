@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:final_project/screens/registration_screen.dart';
 import 'package:final_project/screens/sample_portfolio_button/sample_options_screen.dart';
+import 'package:final_project/screens/user_profile_screen.dart';
+import 'package:final_project/screens/login_screen.dart';
+import 'package:final_project/providers/auth_provider.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final authState = ref.watch(authStateProvider);
     
     return Scaffold(
       appBar: AppBar(
@@ -15,7 +20,19 @@ class HomeScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.account_circle, color: Colors.white),
-            onPressed: () {},
+            onPressed: () {
+              if (authState.value != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const UserProfileScreen()),
+                );
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                );
+              }
+            },
           ),
         ],
       ),

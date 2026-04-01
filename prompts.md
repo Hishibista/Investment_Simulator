@@ -58,3 +58,6 @@ Include a pie chart showing the portfolio allocation percentages. Clearly label 
 [x] 8. Implement account creation using Firebase Authentication. After a user successfully registers, store their associated data in Firebase, including their profile and any app-related information, so their data persists across sessions and devices.
 
 [x] 9. After account creation and completion of the questionnaire, prompt the user to input their initial investment amount. Using their responses, generate a personalized portfolio allocation and demonstrate how their funds would be distributed across various asset classes.
+
+[x] 10. Use the icon in the top-right corner of the dashboard as the user profile/sign-in button. Tapping it should navigate the user to a screen displaying their saved portfolio, account details, and previously stored investment data.
+

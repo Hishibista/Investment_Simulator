@@ -71,6 +71,31 @@ class AuthService {
     return null; 
   }
 
+  Future<UserCredential?> signInWithEmailAndPassword(String email, String password) async {
+    if (_isFirebaseUsable) {
+      try {
+        return await _auth!.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+      } on FirebaseAuthException catch (e) {
+        throw e.message ?? "An error occurred during sign in.";
+      }
+    }
+    
+    // Fallback Mock sign in
+    final prefs = await SharedPreferences.getInstance();
+    final userStr = prefs.getString('mock_user');
+    if (userStr != null) {
+      final data = jsonDecode(userStr);
+      if (data['email'] == email) {
+        debugPrint("MOCK: Signed in as $email");
+        return null; // Mock return
+      }
+    }
+    throw "Invalid email or password (MOCK)";
+  }
+
   Future<void> signOut() async {
     if (_isFirebaseUsable) {
       await _auth!.signOut();
