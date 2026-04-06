@@ -58,6 +58,8 @@ class QuestionnaireNotifier extends StateNotifier<Questionnaire> {
         'financialProfile': state.financialProfile,
         'initialInvestmentAmount': state.initialInvestmentAmount,
         'updatedAt': FieldValue.serverTimestamp(),
+        'email': user.email,
+        'username': user.email?.split('@')[0], // Using email prefix as username
       });
     } catch (e) {
       debugPrint("Error in saveToFirestore: $e");

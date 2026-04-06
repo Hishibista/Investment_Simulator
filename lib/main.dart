@@ -4,6 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:final_project/firebase_options.dart';
 import 'package:final_project/theme.dart';
 import 'package:final_project/screens/home_screen.dart';
+import 'package:final_project/screens/portfolio_allocation_screen.dart';
+import 'package:final_project/providers/auth_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,12 +34,34 @@ class MyApp extends StatelessWidget {
       title: 'Investment Simulator',
       theme: AppTheme.darkTheme,
       home: firebaseInitialized 
-          ? const HomeScreen() 
+          ? const AuthGate() 
           : const Scaffold(
               body: Center(
                 child: Text("Firebase could not be initialized. Please check your configuration."),
               ),
             ),
+    );
+  }
+}
+
+class AuthGate extends ConsumerWidget {
+  const AuthGate({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userProfileAsync = ref.watch(userProfileProvider);
+
+    return userProfileAsync.when(
+      data: (userProfile) {
+        if (userProfile != null && userProfile.questionnaireData != null) {
+          return const PortfolioAllocationScreen();
+        }
+        return const HomeScreen();
+      },
+      loading: () => const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, st) => const HomeScreen(), // Fallback to home on error
     );
   }
 }

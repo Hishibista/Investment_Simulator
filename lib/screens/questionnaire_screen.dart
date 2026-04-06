@@ -181,10 +181,15 @@ class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen> {
                                     if (context.mounted) {
                                       Navigator.pop(context); // Close loading
                                       debugPrint("Questionnaire save error: $e");
+                                      String errorMessage = e.toString();
+                                      if (errorMessage.contains("permission-denied") || errorMessage.contains("insufficient permissions")) {
+                                        errorMessage = "Results shown but not saved. Action Required: Please go to the Firebase Console -> Build -> Firestore -> Rules, and ensure you have published your security rules. Also verify the 'users' collection allows writes for authenticated users.";
+                                      }
                                       ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text("Note: Results shown but not saved to account (Permission Denied)."),
-                                          duration: Duration(seconds: 3),
+                                        SnackBar(
+                                          content: Text("Note: $errorMessage"),
+                                          duration: const Duration(seconds: 10),
+                                          action: SnackBarAction(label: "OK", onPressed: () {}),
                                         ),
                                       );
                                       _navigateToResults(context);

@@ -2,15 +2,38 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../providers/questionnaire_provider.dart';
+import '../providers/auth_provider.dart';
 import '../models/portfolio_sample.dart';
+import '../models/questionnaire.dart';
 
 class PortfolioAllocationScreen extends ConsumerWidget {
   const PortfolioAllocationScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final questionnaire = ref.watch(questionnaireProvider);
     final theme = Theme.of(context);
+    final userProfileAsync = ref.watch(userProfileProvider);
+    final questionnaireInMemory = ref.watch(questionnaireProvider);
+
+    // Prefer data from Firestore (via userProfileProvider)
+    // If not available, fall back to in-memory state
+    final Questionnaire questionnaire = userProfileAsync.maybeWhen(
+      data: (profile) {
+        if (profile != null && profile.questionnaireData != null) {
+          final data = profile.questionnaireData!;
+          return Questionnaire(
+            investmentObjective: data['investmentObjective'] as String?,
+            financialGoal: data['financialGoal'] as String?,
+            riskTolerance: data['riskTolerance'] as String?,
+            timeHorizon: data['timeHorizon'] as String?,
+            financialProfile: data['financialProfile'] as String?,
+            initialInvestmentAmount: (data['initialInvestmentAmount'] as num?)?.toDouble(),
+          );
+        }
+        return questionnaireInMemory;
+      },
+      orElse: () => questionnaireInMemory,
+    );
 
     // Determine the portfolio based on risk tolerance and objective
     PortfolioSample selectedPortfolio = portfolioSamples[1]; // Default to Medium Risk

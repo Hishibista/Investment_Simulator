@@ -5,6 +5,11 @@ service cloud.firestore {
     // Allow users to read and write only their own document in the 'users' collection
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
+      
+      // Explicitly allow sub-paths if any (not used yet, but good for future)
+      match /{allPaths=**} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
     }
   }
 }

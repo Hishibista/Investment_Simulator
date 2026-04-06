@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:final_project/models/user_profile.dart';
 import 'package:flutter/foundation.dart';
 
@@ -13,7 +12,7 @@ class AuthService {
     return _auth.authStateChanges();
   }
 
-  Future<UserCredential?> signUpWithEmailAndPassword(String email, String password) async {
+  Future<UserCredential?> signUpWithEmailAndPassword(String email, String password, {String? username}) async {
     try {
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: email,
@@ -26,6 +25,7 @@ class AuthService {
           UserProfile userProfile = UserProfile(
             uid: userCredential.user!.uid,
             email: email,
+            username: username ?? email.split('@')[0],
             createdAt: DateTime.now(),
           );
           await _firestore.collection('users').doc(userCredential.user!.uid).set(userProfile.toFirestore());
@@ -77,6 +77,7 @@ class AuthService {
           return UserProfile(
             uid: uid,
             email: currentUser.email ?? '',
+            username: currentUser.email?.split('@')[0],
             createdAt: DateTime.now(), // Fallback
           );
         }
@@ -85,6 +86,15 @@ class AuthService {
       debugPrint("Firestore failed: $e");
     }
     return null;
+  }
+
+  Stream<UserProfile?> getUserProfileStream(String uid) {
+    return _firestore.collection('users').doc(uid).snapshots().map((doc) {
+      if (doc.exists) {
+        return UserProfile.fromFirestore(doc);
+      }
+      return null;
+    });
   }
 
   Future<void> updateQuestionnaireData(String uid, Map<String, dynamic> data) async {

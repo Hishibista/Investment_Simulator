@@ -63,3 +63,4 @@ Include a pie chart showing the portfolio allocation percentages. Clearly label 
 
 [x] 11. The app is currently using a dummy API key, so newly created user accounts are not being stored in Firebase. Update the configuration to connect the app to my Firebase project, SYE26-Investment, so that all newly created accounts are properly saved and visible in Firebase Authentication.
 
+[x] 12. Currently, the user’s email and password are successfully creating an account in Firebase Authentication, but the questionnaire responses and selected investment preferences are not being stored. Save all user-selected options under the associated Firebase user account (linked by UID, email, and username) in Firestore. When the user logs in again, retrieve this saved data and route them directly to their personalized portfolio dashboard.
