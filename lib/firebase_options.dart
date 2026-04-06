@@ -41,37 +41,38 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'dummy-api-key',
-    appId: '1:1234567890:web:abcdef123456',
-    messagingSenderId: '1234567890',
-    projectId: 'final-project-dummy',
-    authDomain: 'final-project-dummy.firebaseapp.com',
-    storageBucket: 'final-project-dummy.appspot.com',
+    apiKey: 'AIzaSyBW0zsqenIj4fGWMHNTpZg_9hU8dZjsS5U',
+    appId: '1:205572842828:web:f940ec7a8ddeb395615be9',
+    messagingSenderId: '205572842828',
+    projectId: 'sye26-investment',
+    authDomain: 'sye26-investment.firebaseapp.com',
+    storageBucket: 'sye26-investment.firebasestorage.app',
+    measurementId: 'G-1QNSG6K4PL',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'dummy-api-key',
-    appId: '1:1234567890:android:abcdef123456',
-    messagingSenderId: '1234567890',
-    projectId: 'final-project-dummy',
-    storageBucket: 'final-project-dummy.appspot.com',
+    apiKey: 'AIzaSyA_4s-ExxncJC1BFxWEdkMQ2rc_396dT0E',
+    appId: '1:205572842828:android:69806eccf2f7a1f5615be9',
+    messagingSenderId: '205572842828',
+    projectId: 'sye26-investment',
+    storageBucket: 'sye26-investment.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'dummy-api-key',
-    appId: '1:1234567890:ios:abcdef123456',
-    messagingSenderId: '1234567890',
-    projectId: 'final-project-dummy',
-    storageBucket: 'final-project-dummy.appspot.com',
+    apiKey: 'AIzaSyDilEoj_g4WSgjFM-8W6JLcUcybWhjtF-Y',
+    appId: '1:205572842828:ios:5c99c671d6b30fa7615be9',
+    messagingSenderId: '205572842828',
+    projectId: 'sye26-investment',
+    storageBucket: 'sye26-investment.firebasestorage.app',
     iosBundleId: 'com.example.finalProject',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'dummy-api-key',
-    appId: '1:1234567890:ios:abcdef123456',
-    messagingSenderId: '1234567890',
-    projectId: 'final-project-dummy',
-    storageBucket: 'final-project-dummy.appspot.com',
+    apiKey: 'AIzaSyDilEoj_g4WSgjFM-8W6JLcUcybWhjtF-Y',
+    appId: '1:205572842828:ios:5c99c671d6b30fa7615be9',
+    messagingSenderId: '205572842828',
+    projectId: 'sye26-investment',
+    storageBucket: 'sye26-investment.firebasestorage.app',
     iosBundleId: 'com.example.finalProject',
   );
 

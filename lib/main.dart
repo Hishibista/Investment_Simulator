@@ -7,18 +7,23 @@ import 'package:final_project/screens/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  bool firebaseInitialized = false;
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+    firebaseInitialized = true;
   } catch (e) {
     debugPrint("Firebase initialization failed: $e");
   }
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(ProviderScope(
+    child: MyApp(firebaseInitialized: firebaseInitialized),
+  ));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool firebaseInitialized;
+  const MyApp({super.key, required this.firebaseInitialized});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +31,13 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Investment Simulator',
       theme: AppTheme.darkTheme,
-      home: const HomeScreen(),
+      home: firebaseInitialized 
+          ? const HomeScreen() 
+          : const Scaffold(
+              body: Center(
+                child: Text("Firebase could not be initialized. Please check your configuration."),
+              ),
+            ),
     );
   }
 }

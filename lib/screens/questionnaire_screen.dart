@@ -19,13 +19,21 @@ class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen> {
     super.dispose();
   }
 
+  void _navigateToResults(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const PortfolioAllocationScreen(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final questionnaire = ref.watch(questionnaireProvider);
     final notifier = ref.read(questionnaireProvider.notifier);
     final theme = Theme.of(context);
 
-    // Update controller if step is 5 and it's empty but state has value
     if (questionnaire.currentStep == 5 && _amountController.text.isEmpty && questionnaire.initialInvestmentAmount != null) {
       _amountController.text = questionnaire.initialInvestmentAmount.toString();
     }
@@ -163,23 +171,28 @@ class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen> {
                                     builder: (context) => const Center(child: CircularProgressIndicator()),
                                   );
 
-                                  await notifier.saveToFirestore();
-
-                                  if (context.mounted) {
-                                    Navigator.pop(context); // Close loading
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => const PortfolioAllocationScreen(),
-                                      ),
-                                    );
+                                  try {
+                                    await notifier.saveToFirestore();
+                                    if (context.mounted) {
+                                      Navigator.pop(context); // Close loading
+                                      _navigateToResults(context);
+                                    }
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      Navigator.pop(context); // Close loading
+                                      debugPrint("Questionnaire save error: $e");
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text("Note: Results shown but not saved to account (Permission Denied)."),
+                                          duration: Duration(seconds: 3),
+                                        ),
+                                      );
+                                      _navigateToResults(context);
+                                    }
                                   }
                                 } catch (e) {
                                   if (context.mounted) {
-                                    Navigator.pop(context); // Close loading
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text("Error saving data: $e")),
-                                    );
+                                    Navigator.pop(context); // Safety pop
                                   }
                                 }
                               }

@@ -1,30 +1,33 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:final_project/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('App loads home screen test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    // We pass firebaseInitialized: true to simulate a successful initialization
+    await tester.pumpWidget(
+      const ProviderScope(
+        child: MyApp(firebaseInitialized: true),
+      ),
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Verify that the Home Screen content is displayed.
+    expect(find.text('Investment Strategy'), findsOneWidget);
+    expect(find.text('Get Started'), findsOneWidget);
+    expect(find.text('View Samples'), findsOneWidget);
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  testWidgets('App shows error when Firebase fails', (WidgetTester tester) async {
+    // Build our app with firebaseInitialized: false
+    await tester.pumpWidget(
+      const ProviderScope(
+        child: MyApp(firebaseInitialized: false),
+      ),
+    );
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Verify that the error message is displayed.
+    expect(find.textContaining('Firebase could not be initialized'), findsOneWidget);
   });
 }

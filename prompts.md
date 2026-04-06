@@ -61,3 +61,5 @@ Include a pie chart showing the portfolio allocation percentages. Clearly label 
 
 [x] 10. Use the icon in the top-right corner of the dashboard as the user profile/sign-in button. Tapping it should navigate the user to a screen displaying their saved portfolio, account details, and previously stored investment data.
 
+[x] 11. The app is currently using a dummy API key, so newly created user accounts are not being stored in Firebase. Update the configuration to connect the app to my Firebase project, SYE26-Investment, so that all newly created accounts are properly saved and visible in Firebase Authentication.
+

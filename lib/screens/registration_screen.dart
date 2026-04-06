@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:final_project/screens/questionnaire_screen.dart';
+import 'package:final_project/screens/login_screen.dart';
 import 'package:final_project/providers/auth_provider.dart';
 
 class RegistrationScreen extends ConsumerStatefulWidget {
@@ -78,8 +79,19 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
           setState(() {
             _isLoading = false;
           });
+          debugPrint("Registration error: $e");
+          String errorMessage = e.toString();
+          if (errorMessage.contains("permission-denied")) {
+            errorMessage = "Permission Denied: Please check your Firestore Security Rules in the Firebase Console.";
+          } else if (errorMessage.contains("not-found")) {
+            errorMessage = "Database Not Found: Please ensure you have clicked 'Create Database' in the Firestore section of your Firebase Console.";
+          }
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(e.toString())),
+            SnackBar(
+              content: Text(errorMessage),
+              duration: const Duration(seconds: 10),
+              action: SnackBarAction(label: "OK", onPressed: () {}),
+            ),
           );
         }
       }
@@ -191,6 +203,18 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Text("Create Account"),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Center(
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const LoginScreen()),
+                      );
+                    },
+                    child: const Text("Already have an account? Sign In"),
                   ),
                 ),
               ],

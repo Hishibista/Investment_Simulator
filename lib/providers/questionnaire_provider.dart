@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/questionnaire.dart';
 import 'auth_provider.dart';
 
@@ -39,9 +41,15 @@ class QuestionnaireNotifier extends StateNotifier<Questionnaire> {
   }
 
   Future<void> saveToFirestore() async {
-    final user = _ref.read(authStateProvider).value;
-    if (user != null) {
-      final authService = _ref.read(authServiceProvider);
+    final userValue = _ref.read(authStateProvider);
+    final user = userValue.value;
+    
+    if (user == null) {
+      throw "User must be signed in to save questionnaire data.";
+    }
+
+    final authService = _ref.read(authServiceProvider);
+    try {
       await authService.updateQuestionnaireData(user.uid, {
         'investmentObjective': state.investmentObjective,
         'financialGoal': state.financialGoal,
@@ -49,7 +57,11 @@ class QuestionnaireNotifier extends StateNotifier<Questionnaire> {
         'timeHorizon': state.timeHorizon,
         'financialProfile': state.financialProfile,
         'initialInvestmentAmount': state.initialInvestmentAmount,
+        'updatedAt': FieldValue.serverTimestamp(),
       });
+    } catch (e) {
+      debugPrint("Error in saveToFirestore: $e");
+      rethrow;
     }
   }
   

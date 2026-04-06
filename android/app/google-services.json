@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "205572842828",
+    "project_id": "sye26-investment",
+    "storage_bucket": "sye26-investment.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:205572842828:android:69806eccf2f7a1f5615be9",
+        "android_client_info": {
+          "package_name": "com.example.final_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_4s-ExxncJC1BFxWEdkMQ2rc_396dT0E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
