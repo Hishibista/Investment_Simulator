@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'registration_screen.dart';
 import '../providers/questionnaire_provider.dart';
 import '../providers/auth_provider.dart';
 import '../models/portfolio_sample.dart';
@@ -158,11 +157,7 @@ class PortfolioAllocationScreen extends ConsumerWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (context) => const RegistrationScreen()),
-                      (route) => false,
-                    );
+                    Navigator.of(context).popUntil((route) => route.isFirst);
                   },
                   child: const Text("Go to Dashboard"),
                 ),
@@ -175,7 +170,6 @@ class PortfolioAllocationScreen extends ConsumerWidget {
     );
   }
 }
-
 
 class _AllocationCard extends StatelessWidget {
   final PortfolioAsset asset;
