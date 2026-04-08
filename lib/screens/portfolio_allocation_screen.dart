@@ -5,6 +5,8 @@ import '../providers/questionnaire_provider.dart';
 import '../providers/auth_provider.dart';
 import '../models/portfolio_sample.dart';
 import '../models/questionnaire.dart';
+import 'user_profile_screen.dart';
+import 'home_screen.dart';
 
 class PortfolioAllocationScreen extends ConsumerWidget {
   const PortfolioAllocationScreen({super.key});
@@ -63,6 +65,17 @@ class PortfolioAllocationScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text("Your Personalized Portfolio"),
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.account_circle, color: Colors.white),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const UserProfileScreen()),
+              );
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -157,9 +170,12 @@ class PortfolioAllocationScreen extends ConsumerWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).popUntil((route) => route.isFirst);
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (context) => const HomeScreen()),
+                      (route) => false,
+                    );
                   },
-                  child: const Text("Go to Dashboard"),
+                  child: const Text("Go to Home"),
                 ),
               ),
               const SizedBox(height: 20),

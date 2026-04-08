@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:final_project/screens/registration_screen.dart';
+import 'package:final_project/screens/portfolio_allocation_screen.dart';
+import 'package:final_project/screens/questionnaire_screen.dart';
 import 'package:final_project/screens/sample_portfolio_button/sample_options_screen.dart';
 import 'package:final_project/screens/user_profile_screen.dart';
 import 'package:final_project/screens/login_screen.dart';
@@ -13,6 +15,7 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final authState = ref.watch(authStateProvider);
+    final userProfileAsync = ref.watch(userProfileProvider);
     
     return Scaffold(
       appBar: AppBar(
@@ -73,18 +76,49 @@ class HomeScreen extends ConsumerWidget {
                 width: double.infinity,
                 child: ElevatedButton(
 
-                  //when pressed, navigate the registration screen
+                  //when pressed, navigate the registration screen or dashboard
                   onPressed: () {
-                    Navigator.push(
-                      context,
-
-                      //material page route handles screen transition
-                      MaterialPageRoute(
-                        builder: (context) => const RegistrationScreen(),
-                      ),
-                    );
+                    if (authState.value != null) {
+                      userProfileAsync.maybeWhen(
+                        data: (profile) {
+                          if (profile != null && profile.questionnaireData != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const PortfolioAllocationScreen()),
+                            );
+                          } else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const QuestionnaireScreen()),
+                            );
+                          }
+                        },
+                        orElse: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const QuestionnaireScreen()),
+                          );
+                        },
+                      );
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const RegistrationScreen(),
+                        ),
+                      );
+                    }
                   },
-                  child: const Text("Get Started"),
+                  child: Text(
+                    authState.value != null
+                        ? userProfileAsync.maybeWhen(
+                            data: (profile) => profile != null && profile.questionnaireData != null
+                                ? "Go to Dashboard"
+                                : "Start Questionnaire",
+                            orElse: () => "Start Questionnaire",
+                          )
+                        : "Get Started",
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
