@@ -65,4 +65,7 @@ Include a pie chart showing the portfolio allocation percentages. Clearly label 
 
 [x] 12. Currently, the user’s email and password are successfully creating an account in Firebase Authentication, but the questionnaire responses and selected investment preferences are not being stored. Save all user-selected options under the associated Firebase user account (linked by UID, email, and username) in Firestore. When the user logs in again, retrieve this saved data and route them directly to their personalized portfolio dashboard.
 
-[ ] 
+[x] 13. Enhance the User Profile screen by adding an Edit button beside the investment preferences and initial investment fields. Tapping the button should allow the user to update their selected preferences and initial investment amount, with all changes persisted to Firebase and immediately reflected in the portfolio dashboard.
+
+
+

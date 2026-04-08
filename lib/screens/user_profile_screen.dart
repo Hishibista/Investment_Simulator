@@ -27,14 +27,8 @@ class UserProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authUser = ref.watch(authStateProvider).value;
+    final userProfileAsync = ref.watch(userProfileProvider);
     final theme = Theme.of(context);
-
-    if (authUser == null) {
-      return const Scaffold(
-        body: Center(child: Text("Please sign in to view your profile.")),
-      );
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -49,15 +43,10 @@ class UserProfileScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: FutureBuilder<UserProfile?>(
-        future: ref.read(authServiceProvider).getUserProfile(authUser.uid),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          final profile = snapshot.data;
+      body: userProfileAsync.when(
+        data: (profile) {
           if (profile == null) {
-            return const Center(child: Text("Error fetching profile."));
+            return const Center(child: Text("Please sign in to view your profile."));
           }
 
           final data = profile.questionnaireData;
@@ -73,17 +62,21 @@ class UserProfileScreen extends ConsumerWidget {
                 ]),
                 const SizedBox(height: 24),
                 if (data != null) ...[
-                  _buildInfoCard("Investment Preferences", [
-                    _buildDetailRow("Objective", data['investmentObjective'] ?? "N/A"),
-                    _buildDetailRow("Goal", data['financialGoal'] ?? "N/A"),
-                    _buildDetailRow("Risk Tolerance", data['riskTolerance'] ?? "N/A"),
-                    _buildDetailRow("Time Horizon", data['timeHorizon'] ?? "N/A"),
-                    _buildDetailRow("Financial Profile", data['financialProfile'] ?? "N/A"),
-                  ]),
+                  _buildInfoCard(
+                    "Investment Preferences",
+                    [
+                      _buildDetailRow("Objective", data['investmentObjective'] ?? "N/A"),
+                      _buildDetailRow("Goal", data['financialGoal'] ?? "N/A"),
+                      _buildDetailRow("Risk Tolerance", data['riskTolerance'] ?? "N/A"),
+                      _buildDetailRow("Time Horizon", data['timeHorizon'] ?? "N/A"),
+                      _buildDetailRow("Financial Profile", data['financialProfile'] ?? "N/A"),
+                    ],
+                    onEdit: () => _showEditPreferencesDialog(context, ref, profile),
+                  ),
                   const SizedBox(height: 24),
                   Text("Your Portfolio", style: theme.textTheme.headlineSmall),
                   const SizedBox(height: 16),
-                  _buildPortfolioSection(context, data),
+                  _buildPortfolioSection(context, ref, profile, data),
                 ] else
                   const Center(
                     child: Padding(
@@ -95,18 +88,30 @@ class UserProfileScreen extends ConsumerWidget {
             ),
           );
         },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, stack) => Center(child: Text("Error: $err")),
       ),
     );
   }
 
-  Widget _buildInfoCard(String title, List<Widget> children) {
+  Widget _buildInfoCard(String title, List<Widget> children, {VoidCallback? onEdit}) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                if (onEdit != null)
+                  IconButton(
+                    icon: const Icon(Icons.edit, size: 20, color: Colors.green),
+                    onPressed: onEdit,
+                  ),
+              ],
+            ),
             const Divider(),
             ...children,
           ],
@@ -128,7 +133,7 @@ class UserProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildPortfolioSection(BuildContext context, Map<String, dynamic> data) {
+  Widget _buildPortfolioSection(BuildContext context, WidgetRef ref, UserProfile profile, Map<String, dynamic> data) {
     final portfolio = _calculatePortfolio(data);
     final amount = (data['initialInvestmentAmount'] as num?)?.toDouble() ?? 0.0;
 
@@ -153,7 +158,16 @@ class UserProfileScreen extends ConsumerWidget {
         const SizedBox(height: 16),
         Text(portfolio.title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green)),
         const SizedBox(height: 8),
-        Text("Initial Investment: \$${amount.toStringAsFixed(2)}", style: const TextStyle(color: Colors.grey)),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("Initial Investment: \$${amount.toStringAsFixed(2)}", style: const TextStyle(color: Colors.grey)),
+            IconButton(
+              icon: const Icon(Icons.edit, size: 16, color: Colors.green),
+              onPressed: () => _showEditInvestmentDialog(context, ref, profile),
+            ),
+          ],
+        ),
         const SizedBox(height: 16),
         ...portfolio.assets.map((asset) => ListTile(
               leading: CircleAvatar(backgroundColor: asset.color, radius: 8),
@@ -161,6 +175,164 @@ class UserProfileScreen extends ConsumerWidget {
               trailing: Text("\$${((asset.percentage / 100) * amount).toStringAsFixed(2)}"),
             )),
       ],
+    );
+  }
+
+  void _showEditPreferencesDialog(BuildContext context, WidgetRef ref, UserProfile profile) {
+    final data = Map<String, dynamic>.from(profile.questionnaireData ?? {});
+    
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text("Edit Preferences"),
+              scrollable: true,
+              content: SizedBox(
+                width: double.maxFinite,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildDropdownField(
+                      "Objective",
+                      data['investmentObjective'],
+                      ["Grow wealth", "Preserve wealth"],
+                      (val) => setState(() => data['investmentObjective'] = val),
+                    ),
+                    _buildDropdownField(
+                      "Goal",
+                      data['financialGoal'],
+                      ["Buy a house", "Pay for education", "Retirement", "Other"],
+                      (val) => setState(() => data['financialGoal'] = val),
+                    ),
+                    _buildDropdownField(
+                      "Risk Tolerance",
+                      data['riskTolerance'],
+                      ["High risk / High return", "Medium risk / Medium return", "Low risk / Low return", "No preference"],
+                      (val) => setState(() => data['riskTolerance'] = val),
+                    ),
+                    _buildDropdownField(
+                      "Time Horizon",
+                      data['timeHorizon'],
+                      ["Less than 3 years", "3–7 years", "7–15 years", "15+ years"],
+                      (val) => setState(() => data['timeHorizon'] = val),
+                    ),
+                    _buildDropdownField(
+                      "Financial Profile",
+                      data['financialProfile'],
+                      ["Student", "Early career", "Mid-career", "Near retirement"],
+                      (val) => setState(() => data['financialProfile'] = val),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
+                ElevatedButton(
+                  onPressed: () async {
+                    final confirmed = await _showConfirmationDialog(
+                      context,
+                      title: "Update Preferences",
+                      message: "Are you sure you want to update your investment preferences? This will recalculate your suggested portfolio.",
+                    );
+                    if (confirmed == true) {
+                      await ref.read(authServiceProvider).updateQuestionnaireData(profile.uid, data);
+                      if (context.mounted) Navigator.pop(context);
+                    }
+                  },
+                  child: const Text("Save"),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showEditInvestmentDialog(BuildContext context, WidgetRef ref, UserProfile profile) {
+    final data = Map<String, dynamic>.from(profile.questionnaireData ?? {});
+    final controller = TextEditingController(text: (data['initialInvestmentAmount'] ?? 0).toString());
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Edit Investment"),
+          content: TextField(
+            controller: controller,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(
+              labelText: "Initial Investment Amount",
+              prefixText: "\$",
+            ),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
+            ElevatedButton(
+              onPressed: () async {
+                final amount = double.tryParse(controller.text);
+                if (amount != null) {
+                  final confirmed = await _showConfirmationDialog(
+                    context,
+                    title: "Update Investment",
+                    message: "Update your initial investment amount to \$${amount.toStringAsFixed(2)}?",
+                  );
+                  if (confirmed == true) {
+                    data['initialInvestmentAmount'] = amount;
+                    await ref.read(authServiceProvider).updateQuestionnaireData(profile.uid, data);
+                    if (context.mounted) Navigator.pop(context);
+                  }
+                }
+              },
+              child: const Text("Save"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<bool?> _showConfirmationDialog(BuildContext context, {required String title, required String message}) {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text("Cancel"),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text("Confirm"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDropdownField(String label, String? value, List<String> options, ValueChanged<String?> onChanged) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: DropdownButtonFormField<String>(
+        value: value,
+        isExpanded: true,
+        decoration: InputDecoration(
+          labelText: label,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        ),
+        items: options.map((opt) => DropdownMenuItem(
+          value: opt, 
+          child: Text(
+            opt,
+            overflow: TextOverflow.ellipsis,
+          ),
+        )).toList(),
+        onChanged: onChanged,
+      ),
     );
   }
 }
