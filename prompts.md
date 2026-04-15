@@ -67,5 +67,21 @@ Include a pie chart showing the portfolio allocation percentages. Clearly label 
 
 [x] 13. Enhance the User Profile screen by adding an Edit button beside the investment preferences and initial investment fields. Tapping the button should allow the user to update their selected preferences and initial investment amount, with all changes persisted to Firebase and immediately reflected in the portfolio dashboard.
 
-
+[x] 14. The dashboard and the user screen both show the pie chart so change it that, the Dashboard screen should be redesigned as a Portfolio Growth Tracker that visually displays the performance of the user’s investment over time.
+Dashboard Requirements – Growth Tracker
+Create a dedicated Dashboard screen separate from the profile page. Replace the current duplicated profile-style layout with a growth tracking interface: 
+Display the user’s initial investment amount
+Show the current projected portfolio value
+Include a line chart / growth graph that tracks portfolio growth over time
+The graph should display values across time intervals such as:
+1 month
+6 months
+1 year
+5 years
+10 years
+Use the user’s selected portfolio type (high, medium, or low risk) to determine the expected growth rate
+Simulate growth using a simple annual return assumption, for example:
+High risk: 10–12%
+Medium risk: 6–8%
+Low risk: 3–5%
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:final_project/screens/registration_screen.dart';
-import 'package:final_project/screens/portfolio_allocation_screen.dart';
+import 'package:final_project/screens/dashboard_screen.dart';
 import 'package:final_project/screens/questionnaire_screen.dart';
 import 'package:final_project/screens/sample_portfolio_button/sample_options_screen.dart';
 import 'package:final_project/screens/user_profile_screen.dart';
@@ -16,7 +16,7 @@ class HomeScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final authState = ref.watch(authStateProvider);
     final userProfileAsync = ref.watch(userProfileProvider);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Investment Strategy"),
@@ -84,7 +84,7 @@ class HomeScreen extends ConsumerWidget {
                           if (profile != null && profile.questionnaireData != null) {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => const PortfolioAllocationScreen()),
+                              MaterialPageRoute(builder: (context) => const DashboardScreen()),
                             );
                           } else {
                             Navigator.push(

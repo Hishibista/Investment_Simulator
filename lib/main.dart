@@ -4,7 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:final_project/firebase_options.dart';
 import 'package:final_project/theme.dart';
 import 'package:final_project/screens/home_screen.dart';
-import 'package:final_project/screens/portfolio_allocation_screen.dart';
+import 'package:final_project/screens/dashboard_screen.dart';
 import 'package:final_project/providers/auth_provider.dart';
 
 void main() async {
@@ -54,7 +54,7 @@ class AuthGate extends ConsumerWidget {
     return userProfileAsync.when(
       data: (userProfile) {
         if (userProfile != null && userProfile.questionnaireData != null) {
-          return const PortfolioAllocationScreen();
+          return const DashboardScreen();
         }
         return const HomeScreen();
       },

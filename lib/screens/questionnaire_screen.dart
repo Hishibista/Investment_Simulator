@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/questionnaire_provider.dart';
-import 'portfolio_allocation_screen.dart';
+import 'dashboard_screen.dart';
 
 class QuestionnaireScreen extends ConsumerStatefulWidget {
   const QuestionnaireScreen({super.key});
@@ -23,7 +23,7 @@ class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const PortfolioAllocationScreen(),
+        builder: (context) => const DashboardScreen(),
       ),
     );
   }
