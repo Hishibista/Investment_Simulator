@@ -113,7 +113,7 @@ class HomeScreen extends ConsumerWidget {
                     authState.value != null
                         ? userProfileAsync.maybeWhen(
                             data: (profile) => profile != null && profile.questionnaireData != null
-                                ? "Go to Dashboard"
+                                ? "Portfolio Tracker"
                                 : "Start Questionnaire",
                             orElse: () => "Start Questionnaire",
                           )
