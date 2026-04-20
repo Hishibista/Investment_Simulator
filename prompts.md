@@ -85,3 +85,13 @@ High risk: 10–12%
 Medium risk: 6–8%
 Low risk: 3–5%
 
+[x] 15. Update the portfolio growth tracker so that growth is no longer based on a fixed annual return. Instead, simulate yearly portfolio performance using randomized returns within a realistic range based on the user’s selected risk profile. Include both positive and negative growth to better reflect real market behavior.
+
+[x] 16. Growth Logic Requirements: Replace fixed growth assumptions with randomized annual returns. Support both positive and negative yearly performance.
+Use different return ranges depending on risk level:
+High Risk:   -20% to +25%
+Medium Risk: -10% to +15%
+Low Risk:    -5% to +8% 
+Ensure the line graph can show dips, recoveries, and volatility
+
+[x] 17. When the portfolio tracker has negative growth, show it as being marked red. Change the outline and the area under it red. 

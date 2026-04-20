@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'dart:math' as math;
 import '../providers/questionnaire_provider.dart';
 import '../providers/auth_provider.dart';
+import '../providers/effective_questionnaire_provider.dart';
+import '../providers/growth_simulation_provider.dart';
 import '../models/questionnaire.dart';
 import 'user_profile_screen.dart';
 import 'home_screen.dart';
 
+//This is the portfolio tracker page
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
 
@@ -16,44 +18,6 @@ class DashboardScreen extends ConsumerStatefulWidget {
 }
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
-  String _selectedInterval = '10Y';
-
-  double _getGrowthRate(String? riskTolerance, String? objective) {
-    if (objective == "Preserve wealth") return 0.04; // Low risk
-
-    switch (riskTolerance) {
-      case "High risk / High return":
-        return 0.11;
-      case "Medium risk / Medium return":
-        return 0.07;
-      case "Low risk / Low return":
-        return 0.04;
-      default:
-        return 0.07;
-    }
-  }
-
-  List<FlSpot> _generateGrowthSpots(double initialAmount, double annualRate) {
-    // We'll show points for 0, 1M, 6M, 1Y, 5Y, 10Y
-    // X axis indices: 0, 1, 2, 3, 4, 5
-    
-    double v0 = initialAmount;
-    double v1m = initialAmount * math.pow(1 + annualRate / 12, 1);
-    double v6m = initialAmount * math.pow(1 + annualRate / 12, 6);
-    double v1y = initialAmount * math.pow(1 + annualRate, 1);
-    double v5y = initialAmount * math.pow(1 + annualRate, 5);
-    double v10y = initialAmount * math.pow(1 + annualRate, 10);
-
-    return [
-      FlSpot(0, v0),
-      FlSpot(1, v1m),
-      FlSpot(2, v6m),
-      FlSpot(3, v1y),
-      FlSpot(4, v5y),
-      FlSpot(5, v10y),
-    ];
-  }
-
   String _getBottomTitle(double value) {
     switch (value.toInt()) {
       case 0: return 'Start';
@@ -69,31 +33,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final userProfileAsync = ref.watch(userProfileProvider);
-    final questionnaireInMemory = ref.watch(questionnaireProvider);
-
-    final Questionnaire questionnaire = userProfileAsync.maybeWhen(
-      data: (profile) {
-        if (profile != null && profile.questionnaireData != null) {
-          final data = profile.questionnaireData!;
-          return Questionnaire(
-            investmentObjective: data['investmentObjective'] as String?,
-            financialGoal: data['financialGoal'] as String?,
-            riskTolerance: data['riskTolerance'] as String?,
-            timeHorizon: data['timeHorizon'] as String?,
-            financialProfile: data['financialProfile'] as String?,
-            initialInvestmentAmount: (data['initialInvestmentAmount'] as num?)?.toDouble(),
-          );
-        }
-        return questionnaireInMemory;
-      },
-      orElse: () => questionnaireInMemory,
-    );
+    final questionnaire = ref.watch(effectiveQuestionnaireProvider);
+    final simulation = ref.watch(growthSimulationProvider);
 
     final double initialAmount = questionnaire.initialInvestmentAmount ?? 0.0;
-    final double rate = _getGrowthRate(questionnaire.riskTolerance, questionnaire.investmentObjective);
-    final spots = _generateGrowthSpots(initialAmount, rate);
-    final double projectedValue = spots.last.y;
+    final spots = simulation.spots;
+    final double projectedValue = simulation.projectedValue;
+    final bool isNegativeGrowth = projectedValue < initialAmount;
+    final Color chartColor = isNegativeGrowth ? Colors.redAccent : theme.colorScheme.secondary;
 
     return Scaffold(
       appBar: AppBar(
@@ -121,7 +68,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              "Projected performance over 10 years",
+              "Projected performance over 10 years (Simulated)",
               style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey),
             ),
             const SizedBox(height: 32),
@@ -129,7 +76,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildValueCard("Initial", initialAmount, theme),
-                _buildValueCard("Projected (10Y)", projectedValue, theme, isHighlight: true),
+                _buildValueCard(
+                  "Projected (10Y)",
+                  projectedValue,
+                  theme,
+                  isHighlight: true,
+                  highlightColor: chartColor,
+                ),
               ],
             ),
             const SizedBox(height: 40),
@@ -168,13 +121,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     LineChartBarData(
                       spots: spots,
                       isCurved: true,
-                      color: theme.colorScheme.secondary,
+                      color: chartColor,
                       barWidth: 4,
                       isStrokeCapRound: true,
                       dotData: const FlDotData(show: true),
                       belowBarData: BarAreaData(
                         show: true,
-                        color: theme.colorScheme.secondary.withValues(alpha: 0.2),
+                        color: chartColor.withValues(alpha: 0.2),
                       ),
                     ),
                   ],
@@ -195,7 +148,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               ),
             ),
             const SizedBox(height: 32),
-            _buildInfoSection(theme, questionnaire.riskTolerance ?? "Medium", rate),
+            _buildInfoSection(theme, questionnaire.riskTolerance ?? "Medium", simulation.annualReturns),
             const SizedBox(height: 40),
             SizedBox(
               width: double.infinity,
@@ -215,19 +168,20 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     );
   }
 
-  Widget _buildValueCard(String label, double value, ThemeData theme, {bool isHighlight = false}) {
+  Widget _buildValueCard(String label, double value, ThemeData theme, {bool isHighlight = false, Color? highlightColor}) {
+    final Color displayColor = highlightColor ?? theme.colorScheme.secondary;
     return Expanded(
       child: Container(
         margin: EdgeInsets.only(right: isHighlight ? 0 : 8, left: isHighlight ? 8 : 0),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isHighlight 
-              ? theme.colorScheme.secondary.withValues(alpha: 0.1)
+              ? displayColor.withValues(alpha: 0.1)
               : Colors.white.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isHighlight 
-                ? theme.colorScheme.secondary.withValues(alpha: 0.3)
+                ? displayColor.withValues(alpha: 0.3)
                 : Colors.white.withValues(alpha: 0.1),
           ),
         ),
@@ -241,7 +195,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: isHighlight ? theme.colorScheme.secondary : Colors.white,
+                color: isHighlight ? displayColor : Colors.white,
               ),
             ),
           ],
@@ -250,7 +204,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     );
   }
 
-  Widget _buildInfoSection(ThemeData theme, String risk, double rate) {
+  Widget _buildInfoSection(ThemeData theme, String risk, List<double> returns) {
+    double avgReturn = returns.reduce((a, b) => a + b) / returns.length;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -261,9 +216,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         children: [
           _buildInfoRow("Risk Profile", risk),
           const Divider(height: 24, color: Colors.white10),
-          _buildInfoRow("Expected Return", "${(rate * 100).toStringAsFixed(0)}% annually"),
+          _buildInfoRow("Avg. Simulation Return", "${(avgReturn * 100).toStringAsFixed(1)}% annually"),
           const Divider(height: 24, color: Colors.white10),
-          _buildInfoRow("Compounding", "Monthly"),
+          _buildInfoRow("Simulation", "Randomized Yearly"),
         ],
       ),
     );

@@ -36,3 +36,10 @@ status).
 
 7. The app should explain key concepts in simple language, such as: Risk tolerance, Diversification, Time horizon,, Conservative vs. growth investing. The app should include short tooltips or help text.
 
+8. Allow users to navigate to the User Settings screen where they can update their investment preferences, risk profile, and investment options. Any changes made should be saved to Firebase Firestore and autommatically update the user’s portfolio allocation and dashboard projections in real time.
+
+10. The Portfolio Tracker must include a line chart / growth graph that visually displays projected portfolio growth over time. The graph should show: time on the x-axis, portfolio value on the y-axis. Time intervals: 1 month, 6 months, 1 year, 5 years and 10 years.
+
+11. The portfolio tracker graph must dynamically update based on the user’s selected portfolio type and investment preferences.
+
+12. The portfolio growth tracker so that growth is no longer based on a fixed annual return. Instead, simulate yearly portfolio performance using randomized returns within a realistic range based on the user’s selected risk profile.
