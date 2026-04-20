@@ -114,30 +114,60 @@ class HomeScreen extends ConsumerWidget {
               ),
               //Spacer pushes buttons to the bottom of the screen
               const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const RegistrationScreen()),
+              authState.when(
+                data: (user) {
+                  if (user == null) {
+                    return Column(
+                      children: [
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const RegistrationScreen()),
+                              );
+                            },
+                            child: const Text("Sign Up"),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const LoginScreen()),
+                              );
+                            },
+                            child: const Text("Login"),
+                          ),
+                        ),
+                      ],
                     );
-                  },
-                  child: const Text("Sign Up"),
-                ),
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  } else {
+                    return userProfileAsync.when(
+                      data: (profile) => Text(
+                        "Hello, ${profile?.username ?? user.email?.split('@')[0] ?? 'User'}",
+                        style: theme.textTheme.headlineMedium?.copyWith(
+                          color: theme.colorScheme.secondary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      loading: () => const Center(child: CircularProgressIndicator()),
+                      error: (err, stack) => Text(
+                        "Hello, ${user.email?.split('@')[0] ?? 'User'}",
+                        style: theme.textTheme.headlineMedium?.copyWith(
+                          color: theme.colorScheme.secondary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     );
-                  },
-                  child: const Text("Login"),
-                ),
+                  }
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (err, stack) => const SizedBox.shrink(),
               ),
             ],
           ),
