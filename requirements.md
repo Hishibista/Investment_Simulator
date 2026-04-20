@@ -43,3 +43,5 @@ status).
 11. The portfolio tracker graph must dynamically update based on the user’s selected portfolio type and investment preferences.
 
 12. The portfolio growth tracker so that growth is no longer based on a fixed annual return. Instead, simulate yearly portfolio performance using randomized returns within a realistic range based on the user’s selected risk profile.
+
+13. Reorganize the homescreen UI having two actions button login and sign up. Then a bar on with view sample, portfolio tracker and user information.  

@@ -21,8 +21,49 @@ class HomeScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text("Investment Strategy"),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.account_circle, color: Colors.white),
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SampleOptionsScreen()),
+              );
+            },
+            child: const Text("Samples", style: TextStyle(color: Colors.white, fontSize: 13)),
+          ),
+          TextButton(
+            onPressed: () {
+              if (authState.value != null) {
+                userProfileAsync.maybeWhen(
+                  data: (profile) {
+                    if (profile != null && profile.questionnaireData != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const DashboardScreen()),
+                      );
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const QuestionnaireScreen()),
+                      );
+                    }
+                  },
+                  orElse: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const QuestionnaireScreen()),
+                    );
+                  },
+                );
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                );
+              }
+            },
+            child: const Text("Tracker", style: TextStyle(color: Colors.white, fontSize: 13)),
+          ),
+          TextButton(
             onPressed: () {
               if (authState.value != null) {
                 Navigator.push(
@@ -36,6 +77,7 @@ class HomeScreen extends ConsumerWidget {
                 );
               }
             },
+            child: const Text("Profile", style: TextStyle(color: Colors.white, fontSize: 13)),
           ),
         ],
       ),
@@ -75,66 +117,26 @@ class HomeScreen extends ConsumerWidget {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-
-                  //when pressed, navigate the registration screen or dashboard
                   onPressed: () {
-                    if (authState.value != null) {
-                      userProfileAsync.maybeWhen(
-                        data: (profile) {
-                          if (profile != null && profile.questionnaireData != null) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const DashboardScreen()),
-                            );
-                          } else {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const QuestionnaireScreen()),
-                            );
-                          }
-                        },
-                        orElse: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const QuestionnaireScreen()),
-                          );
-                        },
-                      );
-                    } else {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const RegistrationScreen(),
-                        ),
-                      );
-                    }
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const RegistrationScreen()),
+                    );
                   },
-                  child: Text(
-                    authState.value != null
-                        ? userProfileAsync.maybeWhen(
-                            data: (profile) => profile != null && profile.questionnaireData != null
-                                ? "Portfolio Tracker"
-                                : "Start Questionnaire",
-                            orElse: () => "Start Questionnaire",
-                          )
-                        : "Get Started",
-                  ),
+                  child: const Text("Sign Up"),
                 ),
               ),
               const SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(
-                  //Navigates to the samples screen
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const SampleOptionsScreen(),
-                      ),
+                      MaterialPageRoute(builder: (context) => const LoginScreen()),
                     );
                   },
-                  child: const Text("View Samples"),
+                  child: const Text("Login"),
                 ),
               ),
             ],

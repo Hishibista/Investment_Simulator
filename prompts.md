@@ -95,3 +95,7 @@ Low Risk:    -5% to +8%
 Ensure the line graph can show dips, recoveries, and volatility
 
 [x] 17. When the portfolio tracker has negative growth, show it as being marked red. Change the outline and the area under it red. 
+
+[x] 18. Update the main (home) UI layout while keeping the existing design intact. Replace the bottom action buttons with “Login” and “Sign Up.” In the top navigation bar, add options for “View Samples,” “Portfolio Tracker,” and “User Profile.” Each option should navigate to its corresponding screen—for example, selecting “View Samples” should open the sample portfolios screen.
+
+[ ]19. When a user is already logged in, hide the “Login” and “Sign Up” action buttons on the main screen. Instead, update the UI to display a personalized greeting such as “Hello, [User Name]” to indicate the currently authenticated user.
