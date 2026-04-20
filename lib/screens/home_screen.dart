@@ -20,157 +20,189 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Investment Strategy"),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const SampleOptionsScreen()),
-              );
-            },
-            child: const Text("Samples", style: TextStyle(color: Colors.white, fontSize: 13)),
-          ),
-          TextButton(
-            onPressed: () {
-              if (authState.value != null) {
-                userProfileAsync.maybeWhen(
-                  data: (profile) {
-                    if (profile != null && profile.questionnaireData != null) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const DashboardScreen()),
-                      );
-                    } else {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const QuestionnaireScreen()),
-                      );
-                    }
-                  },
-                  orElse: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const QuestionnaireScreen()),
-                    );
-                  },
-                );
-              } else {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()),
-                );
-              }
-            },
-            child: const Text("Tracker", style: TextStyle(color: Colors.white, fontSize: 13)),
-          ),
-          TextButton(
-            onPressed: () {
-              if (authState.value != null) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const UserProfileScreen()),
-                );
-              } else {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()),
-                );
-              }
-            },
-            child: const Text("Profile", style: TextStyle(color: Colors.white, fontSize: 13)),
-          ),
-        ],
       ),
       //SafeArea ensures content does not overlap with system UI
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.secondary.withAlpha(25), // ~0.1 opacity
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  Icons.trending_up,
-                  color: theme.colorScheme.secondary,
-                  size: 32,
+        child: Column(
+          children: [
+            // Secondary Navigation Bar
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(color: theme.dividerColor, width: 0.5),
                 ),
               ),
-              const SizedBox(height: 24),
-              Text(
-                "Build Your Future\nPortfolio Today",
-                style: theme.textTheme.displayLarge?.copyWith(
-                  height: 1.2,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                "Personalized investment strategies based on your risk profile and financial goals.",
-                style: theme.textTheme.bodyLarge,
-              ),
-              //Spacer pushes buttons to the bottom of the screen
-              const Spacer(),
-              authState.when(
-                data: (user) {
-                  if (user == null) {
-                    return Column(
-                      children: [
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () {
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const SampleOptionsScreen()),
+                      );
+                    },
+                    child: const Text("Samples", style: TextStyle(color: Colors.white, fontSize: 13)),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      if (authState.value != null) {
+                        userProfileAsync.maybeWhen(
+                          data: (profile) {
+                            if (profile != null && profile.questionnaireData != null) {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const RegistrationScreen()),
+                                MaterialPageRoute(builder: (context) => const DashboardScreen()),
                               );
-                            },
-                            child: const Text("Sign Up"),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton(
-                            onPressed: () {
+                            } else {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const LoginScreen()),
+                                MaterialPageRoute(builder: (context) => const QuestionnaireScreen()),
                               );
-                            },
-                            child: const Text("Login"),
-                          ),
-                        ),
-                      ],
-                    );
-                  } else {
-                    return userProfileAsync.when(
-                      data: (profile) => Text(
-                        "Hello, ${profile?.username ?? user.email?.split('@')[0] ?? 'User'}",
-                        style: theme.textTheme.headlineMedium?.copyWith(
-                          color: theme.colorScheme.secondary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      loading: () => const Center(child: CircularProgressIndicator()),
-                      error: (err, stack) => Text(
-                        "Hello, ${user.email?.split('@')[0] ?? 'User'}",
-                        style: theme.textTheme.headlineMedium?.copyWith(
-                          color: theme.colorScheme.secondary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    );
-                  }
-                },
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (err, stack) => const SizedBox.shrink(),
+                            }
+                          },
+                          orElse: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const QuestionnaireScreen()),
+                            );
+                          },
+                        );
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const LoginScreen()),
+                        );
+                      }
+                    },
+                    child: const Text("Tracker", style: TextStyle(color: Colors.white, fontSize: 13)),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      if (authState.value != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const UserProfileScreen()),
+                        );
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const LoginScreen()),
+                        );
+                      }
+                    },
+                    child: const Text("Profile", style: TextStyle(color: Colors.white, fontSize: 13)),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.secondary.withAlpha(25), // ~0.1 opacity
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          Icons.trending_up,
+                          color: theme.colorScheme.secondary,
+                          size: 32,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      authState.when(
+                        data: (user) {
+                          if (user != null) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: userProfileAsync.when(
+                                data: (profile) => Text(
+                                  "Hello, ${profile?.username ?? user.email?.split('@')[0] ?? 'User'}",
+                                  style: theme.textTheme.headlineMedium?.copyWith(
+                                    color: theme.colorScheme.secondary,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                loading: () => const SizedBox.shrink(),
+                                error: (err, stack) => Text(
+                                  "Hello, ${user.email?.split('@')[0] ?? 'User'}",
+                                  style: theme.textTheme.headlineMedium?.copyWith(
+                                    color: theme.colorScheme.secondary,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+                          return const SizedBox.shrink();
+                        },
+                        loading: () => const SizedBox.shrink(),
+                        error: (err, stack) => const SizedBox.shrink(),
+                      ),
+                      Text(
+                        "Build Your Future\nPortfolio Today",
+                        style: theme.textTheme.displayLarge?.copyWith(
+                          height: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        "Personalized investment strategies based on your risk profile and financial goals.",
+                        style: theme.textTheme.bodyLarge,
+                      ),
+                      const SizedBox(height: 48), // Replaced Spacer with fixed height for scrollable content
+                      authState.when(
+                        data: (user) {
+                          if (user == null) {
+                            return Column(
+                              children: [
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => const RegistrationScreen()),
+                                      );
+                                    },
+                                    child: const Text("Sign Up"),
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: OutlinedButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => const LoginScreen()),
+                                      );
+                                    },
+                                    child: const Text("Login"),
+                                  ),
+                                ),
+                              ],
+                            );
+                          } else {
+                            return const SizedBox.shrink();
+                          }
+                        },
+                        loading: () => const Center(child: CircularProgressIndicator()),
+                        error: (err, stack) => const SizedBox.shrink(),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

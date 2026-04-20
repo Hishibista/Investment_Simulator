@@ -99,3 +99,7 @@ Ensure the line graph can show dips, recoveries, and volatility
 [x] 18. Update the main (home) UI layout while keeping the existing design intact. Replace the bottom action buttons with “Login” and “Sign Up.” In the top navigation bar, add options for “View Samples,” “Portfolio Tracker,” and “User Profile.” Each option should navigate to its corresponding screen—for example, selecting “View Samples” should open the sample portfolios screen.
 
 [x] 19. When a user is already logged in, hide the “Login” and “Sign Up” action buttons on the main screen. Instead, update the UI to display a personalized greeting such as “Hello, [User Name]” to indicate the currently authenticated user.
+
+[x] 20. Have the hello [User Name] be displayed before the "Build Your Future Portfolio Today" text. 
+
+[x] 21. Have the menu bar be on the row below the main bar, so have samples, tracker and profile be below the investment simulator bar. 
