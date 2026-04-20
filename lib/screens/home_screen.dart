@@ -38,12 +38,19 @@ class HomeScreen extends ConsumerWidget {
                 children: [
                   TextButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const SampleOptionsScreen()),
-                      );
+                      if (authState.value != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const UserProfileScreen()),
+                        );
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const LoginScreen()),
+                        );
+                      }
                     },
-                    child: const Text("Samples", style: TextStyle(color: Colors.white, fontSize: 13)),
+                    child: const Text("Profile", style: TextStyle(color: Colors.white, fontSize: 13)),
                   ),
                   TextButton(
                     onPressed: () {
@@ -80,19 +87,12 @@ class HomeScreen extends ConsumerWidget {
                   ),
                   TextButton(
                     onPressed: () {
-                      if (authState.value != null) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const UserProfileScreen()),
-                        );
-                      } else {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const LoginScreen()),
-                        );
-                      }
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const SampleOptionsScreen()),
+                      );
                     },
-                    child: const Text("Profile", style: TextStyle(color: Colors.white, fontSize: 13)),
+                    child: const Text("Sample", style: TextStyle(color: Colors.white, fontSize: 13)),
                   ),
                 ],
               ),
