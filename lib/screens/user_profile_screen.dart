@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:final_project/providers/auth_provider.dart';
 import 'package:final_project/models/user_profile.dart';
 import 'package:final_project/models/portfolio_sample.dart';
@@ -200,37 +201,57 @@ class UserProfileScreen extends ConsumerWidget {
                       ["Grow wealth", "Preserve wealth"],
                       (val) => setState(() => data['investmentObjective'] = val),
                     ),
-                    const SizedBox(height: 8),
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text("Financial Goals (up to 3)", style: TextStyle(fontSize: 12, color: Colors.grey)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: InputDecorator(
+                        decoration: InputDecoration(
+                          labelText: "Financial Goals (up to 3)",
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          filled: true,
+                          fillColor: const Color(0xFF2C2C2C), // Match AppTheme.lightGreyColor
+                        ),
+                        child: Wrap(
+                          spacing: 8,
+                          runSpacing: 4,
+                          children: ["Buy a house", "Pay for education", "Retirement", "Other"].map((goal) {
+                            final goals = List<String>.from(data['financialGoals'] ?? (data['financialGoal'] != null ? [data['financialGoal']] : []));
+                            final isSelected = goals.contains(goal);
+                            return FilterChip(
+                              label: Text(
+                                goal,
+                                style: GoogleFonts.inter(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                              selected: isSelected,
+                              backgroundColor: const Color(0xFF1E1E1E),
+                              selectedColor: Colors.green.withAlpha(50),
+                              checkmarkColor: Colors.green,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                side: BorderSide(
+                                  color: isSelected ? Colors.green : Colors.transparent,
+                                ),
+                              ),
+                              onSelected: (selected) {
+                                setState(() {
+                                  if (selected) {
+                                    if (goals.length < 3) {
+                                      goals.add(goal);
+                                    }
+                                  } else {
+                                    goals.remove(goal);
+                                  }
+                                  data['financialGoals'] = goals;
+                                  data.remove('financialGoal'); // Clean up old field
+                                });
+                              },
+                            );
+                          }).toList(),
+                        ),
+                      ),
                     ),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
-                      children: ["Buy a house", "Pay for education", "Retirement", "Other"].map((goal) {
-                        final goals = List<String>.from(data['financialGoals'] ?? (data['financialGoal'] != null ? [data['financialGoal']] : []));
-                        final isSelected = goals.contains(goal);
-                        return FilterChip(
-                          label: Text(goal, style: TextStyle(fontSize: 12, color: isSelected ? Colors.black : Colors.white)),
-                          selected: isSelected,
-                          onSelected: (selected) {
-                            setState(() {
-                              if (selected) {
-                                if (goals.length < 3) {
-                                  goals.add(goal);
-                                }
-                              } else {
-                                goals.remove(goal);
-                              }
-                              data['financialGoals'] = goals;
-                              data.remove('financialGoal'); // Clean up old field
-                            });
-                          },
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(height: 8),
                     _buildDropdownField(
                       "Risk Tolerance",
                       data['riskTolerance'],
