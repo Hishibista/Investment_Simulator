@@ -205,6 +205,7 @@ class UserProfileScreen extends ConsumerWidget {
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: InputDecorator(
                         decoration: InputDecoration(
+                          //upto 3 selections for financial goals
                           labelText: "Financial Goals (up to 3)",
                           contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                           filled: true,
