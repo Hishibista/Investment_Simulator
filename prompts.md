@@ -103,3 +103,5 @@ Ensure the line graph can show dips, recoveries, and volatility
 [x] 20. Have the hello [User Name] be displayed before the "Build Your Future Portfolio Today" text. 
 
 [x] 21. Have the menu bar be on the row below the main bar, so have samples, tracker and profile be below the investment simulator bar. 
+
+[x] 22. For selecting the financialGoal have the option to select up to 3 financial goals.

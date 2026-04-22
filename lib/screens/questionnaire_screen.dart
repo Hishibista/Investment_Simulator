@@ -46,12 +46,13 @@ class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen> {
         questionnaire.investmentObjective,
         (val) => notifier.setInvestmentObjective(val),
       ),
-      _buildSection(
+      _buildMultiSelectSection(
         context,
         "2. Financial Goals",
+        "Select up to 3 goals",
         ["Buy a house", "Pay for education", "Retirement", "Other"],
-        questionnaire.financialGoal,
-        (val) => notifier.setFinancialGoal(val),
+        questionnaire.financialGoals ?? [],
+        (val) => notifier.toggleFinancialGoal(val),
       ),
       _buildSection(
         context,
@@ -212,6 +213,106 @@ class _QuestionnaireScreenState extends ConsumerState<QuestionnaireScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildMultiSelectSection(
+    BuildContext context,
+    String title,
+    String subtitle,
+    List<String> options,
+    List<String> selectedValues,
+    void Function(String) onToggle,
+  ) {
+    final theme = Theme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: theme.textTheme.headlineMedium?.copyWith(fontSize: 22),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          subtitle,
+          style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey),
+        ),
+        const SizedBox(height: 24),
+        Expanded(
+          child: ListView.separated(
+            itemCount: options.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              final option = options[index];
+              final isSelected = selectedValues.contains(option);
+              final canSelectMore = selectedValues.length < 3;
+
+              return Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: isSelected ? theme.colorScheme.secondary : Colors.white.withValues(alpha: 0.1),
+                    width: 2,
+                  ),
+                  color: isSelected 
+                      ? theme.colorScheme.secondary.withValues(alpha: 0.1) 
+                      : theme.colorScheme.surface,
+                ),
+                child: InkWell(
+                  onTap: () {
+                    if (isSelected || canSelectMore) {
+                      onToggle(option);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("You can select up to 3 goals."),
+                          duration: Duration(seconds: 1),
+                        ),
+                      );
+                    }
+                  },
+                  borderRadius: BorderRadius.circular(16),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            option,
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              color: isSelected ? Colors.white : theme.colorScheme.onSurface,
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            ),
+                          ),
+                        ),
+                        Checkbox(
+                          value: isSelected,
+                          onChanged: (bool? value) {
+                            if (isSelected || canSelectMore) {
+                              onToggle(option);
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("You can select up to 3 goals."),
+                                  duration: Duration(seconds: 1),
+                                ),
+                              );
+                            }
+                          },
+                          activeColor: theme.colorScheme.secondary,
+                          checkColor: Colors.black,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 

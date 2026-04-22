@@ -13,7 +13,7 @@ final effectiveQuestionnaireProvider = Provider<Questionnaire>((ref) {
         final data = profile.questionnaireData!;
         return Questionnaire(
           investmentObjective: data['investmentObjective'] as String?,
-          financialGoal: data['financialGoal'] as String?,
+          financialGoals: (data['financialGoals'] as List<dynamic>?)?.map((e) => e.toString()).toList(),
           riskTolerance: data['riskTolerance'] as String?,
           timeHorizon: data['timeHorizon'] as String?,
           financialProfile: data['financialProfile'] as String?,

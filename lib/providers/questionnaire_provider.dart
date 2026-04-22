@@ -19,9 +19,16 @@ class QuestionnaireNotifier extends StateNotifier<Questionnaire> {
     state = state.copyWith(investmentObjective: value);
   }
   //moves to financial goal 
-  void setFinancialGoal(String value) {
-    //creates new copy with selected option
-    state = state.copyWith(financialGoal: value);
+  void toggleFinancialGoal(String value) {
+    final currentGoals = List<String>.from(state.financialGoals ?? []);
+    if (currentGoals.contains(value)) {
+      currentGoals.remove(value);
+    } else {
+      if (currentGoals.length < 3) {
+        currentGoals.add(value);
+      }
+    }
+    state = state.copyWith(financialGoals: currentGoals);
   }
 
   void setRiskTolerance(String value) {
@@ -52,7 +59,7 @@ class QuestionnaireNotifier extends StateNotifier<Questionnaire> {
     try {
       await authService.updateQuestionnaireData(user.uid, {
         'investmentObjective': state.investmentObjective,
-        'financialGoal': state.financialGoal,
+        'financialGoals': state.financialGoals,
         'riskTolerance': state.riskTolerance,
         'timeHorizon': state.timeHorizon,
         'financialProfile': state.financialProfile,
@@ -86,7 +93,8 @@ class QuestionnaireNotifier extends StateNotifier<Questionnaire> {
   bool isComplete() {
     // Return true only if all fields have values
     return state.investmentObjective != null &&
-        state.financialGoal != null &&
+        state.financialGoals != null &&
+        state.financialGoals!.isNotEmpty &&
         state.riskTolerance != null &&
         state.timeHorizon != null &&
         state.financialProfile != null &&
@@ -97,7 +105,7 @@ class QuestionnaireNotifier extends StateNotifier<Questionnaire> {
     //check current step and verify required input exists
     switch (state.currentStep) {
       case 0: return state.investmentObjective != null;
-      case 1: return state.financialGoal != null;
+      case 1: return state.financialGoals != null && state.financialGoals!.isNotEmpty;
       case 2: return state.riskTolerance != null;
       case 3: return state.timeHorizon != null;
       case 4: return state.financialProfile != null;

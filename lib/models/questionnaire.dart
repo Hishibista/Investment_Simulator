@@ -1,6 +1,6 @@
 class Questionnaire {
   final String? investmentObjective;
-  final String? financialGoal;
+  final List<String>? financialGoals;
   final String? riskTolerance;
   final String? timeHorizon;
   final String? financialProfile;
@@ -9,7 +9,7 @@ class Questionnaire {
 
   Questionnaire({
     this.investmentObjective,
-    this.financialGoal,
+    this.financialGoals,
     this.riskTolerance,
     this.timeHorizon,
     this.financialProfile,
@@ -19,7 +19,7 @@ class Questionnaire {
 
   Questionnaire copyWith({
     String? investmentObjective,
-    String? financialGoal,
+    List<String>? financialGoals,
     String? riskTolerance,
     String? timeHorizon,
     String? financialProfile,
@@ -28,7 +28,7 @@ class Questionnaire {
   }) {
     return Questionnaire(
       investmentObjective: investmentObjective ?? this.investmentObjective,
-      financialGoal: financialGoal ?? this.financialGoal,
+      financialGoals: financialGoals ?? this.financialGoals,
       riskTolerance: riskTolerance ?? this.riskTolerance,
       timeHorizon: timeHorizon ?? this.timeHorizon,
       financialProfile: financialProfile ?? this.financialProfile,

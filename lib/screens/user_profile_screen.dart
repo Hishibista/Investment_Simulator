@@ -66,7 +66,7 @@ class UserProfileScreen extends ConsumerWidget {
                     "Investment Preferences",
                     [
                       _buildDetailRow("Objective", data['investmentObjective'] ?? "N/A"),
-                      _buildDetailRow("Goal", data['financialGoal'] ?? "N/A"),
+                      _buildDetailRow("Goals", (data['financialGoals'] as List<dynamic>?)?.join(", ") ?? data['financialGoal'] ?? "N/A"),
                       _buildDetailRow("Risk Tolerance", data['riskTolerance'] ?? "N/A"),
                       _buildDetailRow("Time Horizon", data['timeHorizon'] ?? "N/A"),
                       _buildDetailRow("Financial Profile", data['financialProfile'] ?? "N/A"),
@@ -200,12 +200,37 @@ class UserProfileScreen extends ConsumerWidget {
                       ["Grow wealth", "Preserve wealth"],
                       (val) => setState(() => data['investmentObjective'] = val),
                     ),
-                    _buildDropdownField(
-                      "Goal",
-                      data['financialGoal'],
-                      ["Buy a house", "Pay for education", "Retirement", "Other"],
-                      (val) => setState(() => data['financialGoal'] = val),
+                    const SizedBox(height: 8),
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text("Financial Goals (up to 3)", style: TextStyle(fontSize: 12, color: Colors.grey)),
                     ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      children: ["Buy a house", "Pay for education", "Retirement", "Other"].map((goal) {
+                        final goals = List<String>.from(data['financialGoals'] ?? (data['financialGoal'] != null ? [data['financialGoal']] : []));
+                        final isSelected = goals.contains(goal);
+                        return FilterChip(
+                          label: Text(goal, style: TextStyle(fontSize: 12, color: isSelected ? Colors.black : Colors.white)),
+                          selected: isSelected,
+                          onSelected: (selected) {
+                            setState(() {
+                              if (selected) {
+                                if (goals.length < 3) {
+                                  goals.add(goal);
+                                }
+                              } else {
+                                goals.remove(goal);
+                              }
+                              data['financialGoals'] = goals;
+                              data.remove('financialGoal'); // Clean up old field
+                            });
+                          },
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 8),
                     _buildDropdownField(
                       "Risk Tolerance",
                       data['riskTolerance'],
