@@ -105,3 +105,5 @@ Ensure the line graph can show dips, recoveries, and volatility
 [x] 21. Have the menu bar be on the row below the main bar, so have samples, tracker and profile be below the investment simulator bar. 
 
 [x] 22. For selecting the financialGoal have the option to select up to 3 financial goals.
+
+[x] 23. In the homescreen when user is not signed in and is given the options of 'sign up' and 'log in' hide the menu bar that has profile, tracker and sample option. We should only being seeing that menu bar once the user is signed in. 

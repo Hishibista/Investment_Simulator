@@ -26,76 +26,69 @@ class HomeScreen extends ConsumerWidget {
         child: Column(
           children: [
             // Secondary Navigation Bar
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(color: theme.dividerColor, width: 0.5),
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      if (authState.value != null) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const UserProfileScreen()),
-                        );
-                      } else {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const LoginScreen()),
-                        );
-                      }
-                    },
-                    child: const Text("Profile", style: TextStyle(color: Colors.white, fontSize: 13)),
+            authState.when(
+              data: (user) {
+                if (user == null) return const SizedBox.shrink();
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: theme.dividerColor, width: 0.5),
+                    ),
                   ),
-                  TextButton(
-                    onPressed: () {
-                      if (authState.value != null) {
-                        userProfileAsync.maybeWhen(
-                          data: (profile) {
-                            if (profile != null && profile.questionnaireData != null) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => const DashboardScreen()),
-                              );
-                            } else {
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const UserProfileScreen()),
+                          );
+                        },
+                        child: const Text("Profile", style: TextStyle(color: Colors.white, fontSize: 13)),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          userProfileAsync.maybeWhen(
+                            data: (profile) {
+                              if (profile != null && profile.questionnaireData != null) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const DashboardScreen()),
+                                );
+                              } else {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const QuestionnaireScreen()),
+                                );
+                              }
+                            },
+                            orElse: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) => const QuestionnaireScreen()),
                               );
-                            }
-                          },
-                          orElse: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const QuestionnaireScreen()),
-                            );
-                          },
-                        );
-                      } else {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const LoginScreen()),
-                        );
-                      }
-                    },
-                    child: const Text("Tracker", style: TextStyle(color: Colors.white, fontSize: 13)),
+                            },
+                          );
+                        },
+                        child: const Text("Tracker", style: TextStyle(color: Colors.white, fontSize: 13)),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const SampleOptionsScreen()),
+                          );
+                        },
+                        child: const Text("Sample", style: TextStyle(color: Colors.white, fontSize: 13)),
+                      ),
+                    ],
                   ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const SampleOptionsScreen()),
-                      );
-                    },
-                    child: const Text("Sample", style: TextStyle(color: Colors.white, fontSize: 13)),
-                  ),
-                ],
-              ),
+                );
+              },
+              loading: () => const SizedBox.shrink(),
+              error: (err, stack) => const SizedBox.shrink(),
             ),
             Expanded(
               child: SingleChildScrollView(
