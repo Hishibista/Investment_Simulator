@@ -37,9 +37,20 @@ class UserProfileScreen extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () {
-              ref.read(authServiceProvider).signOut();
-              Navigator.pop(context);
+            onPressed: () async {
+              try {
+                await ref.read(authServiceProvider).signOut();
+                if (context.mounted) {
+                  // Return to the first screen in the stack (HomeScreen/AuthGate)
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Logout failed: $e")),
+                  );
+                }
+              }
             },
           ),
         ],

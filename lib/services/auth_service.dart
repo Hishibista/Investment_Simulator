@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:final_project/models/user_profile.dart';
 import 'package:flutter/foundation.dart';
 
@@ -10,6 +11,49 @@ class AuthService {
 
   Stream<User?> get authStateChanges {
     return _auth.authStateChanges();
+  }
+
+  Future<UserCredential?> signInWithGoogle() async {
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      // Trigger the authentication flow
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      if (googleUser == null) return null; // User cancelled the sign-in
+
+      // Obtain the auth details from the request
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+      // Create a new credential
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      // Once signed in, return the UserCredential
+      UserCredential userCredential = await _auth.signInWithCredential(credential);
+      
+      if (userCredential.user != null) {
+        // Check if user profile already exists, if not create one
+        final doc = await _firestore.collection('users').doc(userCredential.user!.uid).get();
+        if (!doc.exists) {
+          UserProfile userProfile = UserProfile(
+            uid: userCredential.user!.uid,
+            email: userCredential.user!.email ?? '',
+            username: userCredential.user!.displayName ?? userCredential.user!.email?.split('@')[0] ?? 'User',
+            createdAt: DateTime.now(),
+          );
+          await _firestore.collection('users').doc(userCredential.user!.uid).set(userProfile.toFirestore());
+        }
+      }
+      
+      return userCredential;
+    } on FirebaseAuthException catch (e) {
+      debugPrint("Firebase Auth Error: ${e.code} - ${e.message}");
+      throw e.message ?? "An error occurred during Google sign in.";
+    } catch (e) {
+      debugPrint("Google Sign In failure: $e");
+      rethrow;
+    }
   }
 
   Future<UserCredential?> signUpWithEmailAndPassword(String email, String password, {String? username}) async {
@@ -62,6 +106,12 @@ class AuthService {
   }
 
   Future<void> signOut() async {
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      await googleSignIn.signOut();
+    } catch (e) {
+      debugPrint("Google Sign Out error: $e");
+    }
     await _auth.signOut();
   }
 

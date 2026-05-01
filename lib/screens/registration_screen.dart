@@ -98,6 +98,26 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
     }
   }
 
+  Future<void> _googleSignUp() async {
+    setState(() => _isLoading = true);
+    try {
+      final authService = ref.read(authServiceProvider);
+      final userCredential = await authService.signInWithGoogle();
+      if (userCredential != null && mounted) {
+        setState(() => _isLoading = false);
+        _showDisclaimer();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString())),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
   void _showDisclaimer() {
     showDialog(
       context: context,
@@ -203,6 +223,40 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Text("Create Account"),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(child: Divider(color: Colors.white.withOpacity(0.1))),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Text("OR", style: TextStyle(color: Colors.grey, fontSize: 12)),
+                    ),
+                    Expanded(child: Divider(color: Colors.white.withOpacity(0.1))),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: _isLoading ? null : _googleSignUp,
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: Colors.white.withOpacity(0.1)),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.network(
+                          'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_G_Logo.svg/1200px-Google_G_Logo.svg.png',
+                          height: 20,
+                          errorBuilder: (context, error, stackTrace) => const Icon(Icons.account_circle, size: 20),
+                        ),
+                        const SizedBox(width: 12),
+                        const Text("Sign up with Google", style: TextStyle(color: Colors.white)),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),

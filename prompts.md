@@ -107,3 +107,7 @@ Ensure the line graph can show dips, recoveries, and volatility
 [x] 22. For selecting the financialGoal have the option to select up to 3 financial goals.
 
 [x] 23. In the homescreen when user is not signed in and is given the options of 'sign up' and 'log in' hide the menu bar that has profile, tracker and sample option. We should only being seeing that menu bar once the user is signed in. 
+
+[x] 24. For users to sign out of theie profiles, have the sign out button on the top right of the User Profile screen working, once the sign out icon is tapped on - bring the user back to homescreen with options of login or signout then being unhidden from the home page. 
+ 
+[x] 25. In the sign up option, make it accessible for the user to sign into the account with their google email or google sign in. Make sure the account created with google sign in is saved in firebase and all the data entered by the user with the associated email.

@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
-import '../providers/questionnaire_provider.dart';
-import '../providers/auth_provider.dart';
 import '../providers/effective_questionnaire_provider.dart';
 import '../providers/growth_simulation_provider.dart';
-import '../models/questionnaire.dart';
 import 'user_profile_screen.dart';
 import 'home_screen.dart';
 
